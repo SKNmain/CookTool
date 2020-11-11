@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>6fec4d06-f3be-4801-9c3a-8e08a77c54ea</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.1" />
+    <PackageReference Include="MySql.Data" Version="8.0.22" />
+    <PackageReference Include="NPoco" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\CookTool.Client.csproj" />
+    <ProjectReference Include="..\Shared\CookTool.Shared.csproj" />
+  </ItemGroup>
+
+
+</Project>

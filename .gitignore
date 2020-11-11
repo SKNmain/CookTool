@@ -1,3 +1,7 @@
-/.vs/*
-/bin/*
-/obj/*
+/CookTool/Server/bin
+/CookTool/Client/bin
+/CookTool/Client/obj
+/CookTool/Server/obj
+/.vs
+/CookTool/Shared/bin
+/CookTool/Shared/obj

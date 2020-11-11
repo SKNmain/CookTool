@@ -1,0 +1,92 @@
+﻿@page "/"
+
+@if (recipes == null && tips == null)
+{
+    <div class="spinner-border-sm" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8">
+                <h2> Recipes </h2>
+                <hr />
+                @if (recipes.Count > 0)
+                {
+                    <div class="row">
+                        <div class="card-columns" style="column-count: 2">
+                            @foreach (var recipe in recipes)
+                            {
+                                <div class="card" style="width: 90%;">
+                                    @if (recipe.Image == null)
+                                    {
+                                        <img class="card-img-top" src="images/default_recipe.png" alt="No image for this recipe" style="margin: 0 auto;" />
+                                    }
+                                    else
+                                    {
+                                        <img class="card-img-top" src="data:image/bmp;base64, @(Convert.ToBase64String(recipe.Image))" alt="No image for this recipe" style="margin: 0 auto;" />
+                                    }
+                                    <div class="card-body">
+                                        <h4 class="card-title">@recipe.Title</h4>
+                                        <a href="recipe/@recipe.Id.ToString()" class="btn btn-dark">View more</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p>No recipes here!</p>
+                }
+            </div>
+            <div class="col">
+                <h2> Tips </h2>
+                <hr />
+                @if (tips.Count > 0)
+                {
+                    @foreach (var tip in tips)
+                    {
+                        <div class="card">
+                            @if (tip.Image == null)
+                            {
+                                <img class="card-img-top" src="images/default_recipe.png" alt="No image for this recipe" style="margin: 0 auto;" />
+                            }
+                            else
+                            {
+                                <img class="card-img-top" src="data:image/bmp;base64, @(Convert.ToBase64String(tip.Image))" alt="No image for this recipe" style="margin: 0 auto;" />
+                            }
+                            <div class="card-body">
+                                <h4 class="card-title">@tip.Title</h4>
+                                <a href="tip/@tip.Id.ToString()" class="btn btn-dark">View more</a>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>No tips here!</p>
+                }
+            </div>
+        </div>
+    </div>
+    
+}
+
+
+@code {
+    [Inject]
+    public IHttpClientRepository Client { get; set; }
+
+    private List<CookTool.Shared.Models.Recipe> recipes;
+    private List<CookTool.Shared.Models.Tip> tips;
+
+    protected override async Task OnInitializedAsync()
+    {
+        recipes = await Client.GetRecipes();
+        tips = await Client.GetTips();
+    }
+}
+

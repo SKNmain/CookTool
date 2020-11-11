@@ -1,0 +1,139 @@
+﻿@page "/recipe/{id}"
+
+@if (recipe == null)
+{
+    <div class="spinner-border-sm" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    <h2> @recipe.Title </h2>
+    <hr />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8">
+                <h4>Ingredients</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Checked</th>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Measurement</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ingredientType in ingredients)
+                        {
+                            foreach (var ingredient in ingredientType.Value)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" /></td>
+                                    <td>@ingredient.Name</td>
+                                    <td>
+                                        @if (@ingredient.Quantity > 0)
+                                        {
+                                            @ingredient.Quantity;
+                                        }
+                                        else
+                                        {
+                                            @randomValue;
+                                        }
+                                    </td>
+                                    <td>@ingredientType.Key</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <h4>Preparation</h4>
+                <textarea class="form-control" rows="8" placeholder="@recipe.Preparation" readonly></textarea>
+                <br />
+                <h4>Notes</h4>
+                <textarea class="form-control" rows="5" placeholder="@recipe.Notes" readonly></textarea>
+                <br />
+            </div>
+            <div class="col">
+                @if (recipe.Image == null)
+                {
+                    <img src="images/default_recipe.png" alt="No image for this recipe" style="width: 100%;" />
+                }
+                else
+                {
+                    <img src="data:image/bmp;base64, @(Convert.ToBase64String(recipe.Image))" alt="No image for this recipe" style="width: 100%;" />
+                }
+                <br /><br />
+                <div class="form-group">
+                    <label> Preparation time: </label>
+                    <input class="form-control m-2" type="time" value="@recipe.PreparationTime.TimeOfDay" placeholder="13:45:00" readonly>
+                </div>
+                <div class="form-group">
+                    <label> Portion size: </label>
+                    <div class="form-inline">
+                        <input class="form-control m-2" type="number" value="@recipe.PortionSize" placeholder="1" readonly>
+                        <button class="btn btn-primary" @onclick="() => ChangeIngredientAmountModal.Open()">Change portion size</button>
+                    </div>
+
+                    <Modal @ref="ChangeIngredientAmountModal">
+                        <Title>Change ingredient amount by changing portion size!</Title>
+                        <Body>
+                            <input class="form-control m-2" type="number" @bind="@TempPortionSize">
+                        </Body>
+                        <Footer>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => ChangeIngredientAmount()">Save changes</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => ChangeIngredientAmountModal.Close()">Close</button>
+                        </Footer>
+                    </Modal>
+                </div>
+                <div class="form-group">
+                    <label> Rating: </label>
+                    <input class="form-control m-2" type="number" value="@recipe.Rating" placeholder="1" readonly>
+                </div>
+                <br />
+                <h4>Categories</h4>
+                <ul class="list-group">
+                    @foreach (var category in categories)
+                    {
+                        <li class="list-group-item"> @category.Name </li>
+                    }
+                </ul>
+                <br />
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    [Inject]
+    public IHttpClientRepository Client { get; set; }
+
+    private Modal ChangeIngredientAmountModal { get; set; }
+    private int TempPortionSize { get; set; }
+
+    private String randomValue = "dowolna ilość";
+    private CookTool.Shared.Models.Recipe recipe;
+    private Dictionary<string, List<CookTool.Shared.Models.Ingredient>> ingredients;
+    private List<CookTool.Shared.Models.Category> categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        recipe = await Client.GetRecipe(Id);
+        categories = await Client.GetRecipeCategories(Id);
+        ingredients = await Client.GetRecipeIngredients(Id);
+    }
+
+    public void ChangeIngredientAmount()
+    {
+        double ratio = (double) TempPortionSize / recipe.PortionSize;
+        foreach(var ingredient in ingredients.Values)
+        {
+            ingredient.ForEach(ing => ing.Quantity *= ratio);
+        }
+        recipe.PortionSize = TempPortionSize;
+        ChangeIngredientAmountModal.Close();
+    }
+
+}

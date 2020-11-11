@@ -1,0 +1,72 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">
+        <img src="images/cooktool.png" style="margin: -10px 4px" height="45" alt="CookTool">
+    </a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/recipes/fav">
+                <span class="oi oi-heart" aria-hidden="true"></span> My Favourite Recipes
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-calendar" aria-hidden="true"></span> My Week Menu
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-basket" aria-hidden="true"></span> My Kitchen Ingredients
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-task" aria-hidden="true"></span> My Tasks
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-random" aria-hidden="true"></span> Random Recipe
+            </NavLink>
+        </li>
+    </ul>
+
+    <ul class="nav flex-column fixed-bottom">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/recipes/create">
+                <span class="oi oi-plus" aria-hidden="true"></span> Add New Recipe
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/timer">
+                <span class="oi oi-timer" aria-hidden="true"></span> Timer
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/measurement">
+                <span class="oi oi-beaker" aria-hidden="true"></span> Measurement
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

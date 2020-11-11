@@ -1,0 +1,49 @@
+﻿@page "/me"
+
+@if (user == null)
+{
+    <div class="spinner-border-sm" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    <h2>@user.Nickname</h2>
+    <hr />
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label> Email: </label>
+                    <input class="form-control" type="text" value="@user.Email" placeholder="email@example.com" readonly>
+                </div>
+            </div>
+            <div class="col">
+                @if (user.Image == null)
+                {
+                    <img src="images/default_user.png" alt="No image for this recipe" style="margin: 0 auto;" />
+                }
+                else
+                {
+                    <img src="data:image/bmp;base64, @(Convert.ToBase64String(user.Image))" alt="No image for this user" style="margin: 0 auto;" />
+                }
+                
+
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Inject]
+    public IHttpClientRepository Client { get; set; }
+
+    private CookTool.Shared.Models.User user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await Client.GetUser("2");
+    }
+}

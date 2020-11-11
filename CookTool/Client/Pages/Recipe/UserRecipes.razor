@@ -1,0 +1,65 @@
+﻿@page "/myrecipes"
+@inject HttpClient client
+@inject IJSRuntime js
+
+<h3> My Recipes </h3>
+
+<small>Add as many recipes as you wish.</small>
+<div class="form-group">
+    <a class="btn btn-success" href="recipe/create"><i class="oi oi-plus"></i> Create New Recipe</a>
+</div>
+<br>
+
+@if (recipes == null)
+{
+    <text>Loading...</text>
+}
+else if (recipes.Length == 0)
+{
+    <text>No Records Found.</text>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Categories</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (CookTool.Shared.Models.Recipe recipe in recipes)
+            {
+                <tr>
+                    <td>@recipe.Id</td>
+                    <td>@recipe.Title</td>
+                    <td>@recipe.IsPrivate</td>
+                    <td>
+                        <a class="btn btn-success" href="recipe/edit/@recipe.Id">Edit</a>
+                        <button class="btn btn-danger" @onclick="@(() => Delete(recipe.Id))">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    CookTool.Shared.Models.Recipe[] recipes { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        recipes = await client.GetFromJsonAsync<CookTool.Shared.Models.Recipe[]>("recipes");
+    }
+    async Task Delete(int recipeId)
+    {
+        var recipe = recipes.First(x => x.Id == recipeId);
+        if (await js.InvokeAsync<bool>("confirm", $"Do you want to delete {recipe.Title} ({recipe.Id}) Record?"))
+        {
+            await client.DeleteAsync($"recipe/{recipeId}");
+            await OnInitializedAsync();
+        }
+    }
+}
+

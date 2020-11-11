@@ -1,0 +1,101 @@
+﻿<!--<EditForm Model="@recipe" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />-->
+    @*<div class="form-group ">
+            <div>
+                <label>Upload image :</label>
+                <div class="custom-file">
+                    <input class="custom-file-input" type="file" @bind="@recipe.Image" />
+                    <ValidationMessage For="@(() => recipe.Image)" />
+                </div>
+            </div>
+        </div>*@
+    <!--<div class="form-row">
+        <div class="form-group">
+            <label>Title :</label>
+            <div>
+                <InputText @bind-Value="@recipe.Title" />
+                <ValidationMessage For="@(() => recipe.Title)" />
+            </div>
+        </div>
+        <div class="form-group ">
+            <div>
+                <label>Portion Size :</label>
+                <div>
+                    <InputNumber @bind-Value="@recipe.PortionSize" />
+                    <ValidationMessage For="@(() => recipe.PortionSize)" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group ">
+            <div>
+                <label>Preparation Time:</label>
+                "form-control" type="time"
+                <div>
+
+                    <input class="form-control" type="time" @bind="@recipe.PreparationTime" />
+                    <ValidationMessage For="@(() => recipe.PreparationTime)" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group ">
+            <div>
+                <label>Private :</label>
+                <div>
+                    <InputCheckbox @bind-Value="@recipe.IsPrivate" />
+                    <ValidationMessage For="@(() => recipe.IsPrivate)" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group ">
+            <div>
+                <label>Ingredients :</label>
+                <div>-->
+                    @* todo: upload fields for ingredients*@
+                    <!--<InputText @bind-Value="@recipe.Title" />
+                    <ValidationMessage For="@(() => recipe.Ingredients)" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group ">
+            <div>
+                <label>Categories :</label>
+                <div>-->
+                    @* todo: upload checkboxes for categories*@
+                    <!--<InputNumber @bind-Value="@recipe.Categories" />
+                    <ValidationMessage For="@(() => recipe.Categories)" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group ">
+            <div>
+                <label>Preparation :</label>
+                <div>
+                    <InputTextArea @bind-Value="@recipe.Preparation" />
+                    <ValidationMessage For="@(() => recipe.Preparation)" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group ">
+            <div>
+                <label>Notes :</label>
+                <div>
+                    <InputTextArea @bind-Value="@recipe.Notes" />
+                    <ValidationMessage For="@(() => recipe.Notes)" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success">
+        @ButtonText
+    </button>
+</EditForm>
+@code {
+    [Parameter] public CookTool.Shared.Models.Recipe recipe { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+}-->
