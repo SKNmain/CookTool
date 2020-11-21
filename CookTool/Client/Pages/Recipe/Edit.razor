@@ -1,4 +1,4 @@
-﻿@page "/recipe/create"
+﻿@page "/recipe/edit/{id}"
 @using Microsoft.AspNetCore.Components.Authorization
 
 <AuthorizeView>
@@ -10,5 +10,8 @@
 </AuthorizeView>
 
 @code {
-
+    [Parameter]
+    public string Id { get; set; }
+    [Inject]
+    public IHttpClientRepository Client { get; set; }
 }

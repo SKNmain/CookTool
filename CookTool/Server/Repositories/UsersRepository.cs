@@ -9,7 +9,7 @@ namespace CookTool.Server.Repositories
 {
     public class UsersRepository : IRepository<User>
     {
-        private IDatabase db = DatabaseConnection.Instance;
+        private readonly IDatabase db = DatabaseConnection.Instance;
 
         public IList<User> GetAllRecords()
         {
@@ -24,6 +24,12 @@ namespace CookTool.Server.Repositories
         public User GetRecordByNickname(string nickname)
         {
             return db.Fetch<User>(SqlConstants.USER_BY_NICKNAME(nickname)).First();
+        }
+
+        public User GetRecordByEmail(string email)
+        {
+            email = email.Insert(email.IndexOf('@'), "@");
+            return db.Fetch<User>(SqlConstants.USER_BY_EMAIL(email)).First();
         }
 
         public void AddRecord(User record)

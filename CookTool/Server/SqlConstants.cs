@@ -86,6 +86,8 @@ namespace CookTool.Server
         public static readonly string ALL_USERS = "SELECT * FROM Users";
         public static readonly Func<string, string> USER_BY_NICKNAME = (nickname)
             => $"SELECT * FROM Users WHERE Nickname = {nickname}";
+        public static readonly Func<string, string> USER_BY_EMAIL = (email)
+            => $"SELECT * FROM Users WHERE Email = '{email}'";
 
         // --- USER INGREDIENTS REPOSITORY --- //
 

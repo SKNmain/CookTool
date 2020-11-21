@@ -1,6 +1,6 @@
-﻿<!--<EditForm Model="@recipe" OnValidSubmit="@OnValidSubmit">
-    <DataAnnotationsValidator />-->
-    @*<div class="form-group ">
+﻿@*<EditForm Model="@recipe" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group ">
             <div>
                 <label>Upload image :</label>
                 <div class="custom-file">
@@ -8,8 +8,8 @@
                     <ValidationMessage For="@(() => recipe.Image)" />
                 </div>
             </div>
-        </div>*@
-    <!--<div class="form-row">
+        </div>
+    <div class="form-row">
         <div class="form-group">
             <label>Title :</label>
             <div>
@@ -51,9 +51,9 @@
         <div class="form-group ">
             <div>
                 <label>Ingredients :</label>
-                <div>-->
-                    @* todo: upload fields for ingredients*@
-                    <!--<InputText @bind-Value="@recipe.Title" />
+                <div>
+                     todo: upload fields for ingredients
+                    <InputText @bind-Value="@recipe.Title" />
                     <ValidationMessage For="@(() => recipe.Ingredients)" />
                 </div>
             </div>
@@ -61,9 +61,9 @@
         <div class="form-group ">
             <div>
                 <label>Categories :</label>
-                <div>-->
-                    @* todo: upload checkboxes for categories*@
-                    <!--<InputNumber @bind-Value="@recipe.Categories" />
+                <div>
+                     todo: upload checkboxes for categories
+                    <InputNumber @bind-Value="@recipe.Categories" />
                     <ValidationMessage For="@(() => recipe.Categories)" />
                 </div>
             </div>
@@ -98,4 +98,4 @@
     [Parameter] public CookTool.Shared.Models.Recipe recipe { get; set; }
     [Parameter] public string ButtonText { get; set; } = "Save";
     [Parameter] public EventCallback OnValidSubmit { get; set; }
-}-->
+}*@

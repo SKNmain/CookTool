@@ -1,23 +1,71 @@
-﻿using CookTool.Shared.Models;
+﻿using Blazored.LocalStorage;
+using CookTool.Shared.Authentication;
+using CookTool.Shared.Models;
+using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+
 
 namespace CookTool.Client
 {
     public class HttpClientRepository : IHttpClientRepository
     {
         private readonly HttpClient _client;
-        public HttpClientRepository(HttpClient client)
+        private readonly ILocalStorageService _localStorage;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
+
+        public HttpClientRepository(HttpClient client, ILocalStorageService localStorage, AuthenticationStateProvider authenticationStateProvider)
         {
             _client = client;
+            _localStorage = localStorage;
+            _authenticationStateProvider = authenticationStateProvider;
+        }
+
+        public async Task<LoginResult> Login(LoginModel loginModel)
+        {
+         
+            var response = await _client.PostAsJsonAsync("auth/login", loginModel);
+            var loginResult = await response.Content.ReadFromJsonAsync<LoginResult>();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return loginResult;
+            }
+
+            await _localStorage.SetItemAsync("authToken", loginResult.Token);
+
+            ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(loginModel.Email, loginResult.Nickname, loginResult.Image);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
+
+            return loginResult;
+        }
+
+        public async Task Logout()
+        {
+            await _localStorage.RemoveItemAsync("authToken");
+            ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsLoggedOut();
+            _client.DefaultRequestHeaders.Authorization = null;
+        }
+
+        public async Task<RegisterResult> Register(RegisterModel registerModel)
+        {
+            var result = await _client.PostAsJsonAsync("auth/register", registerModel);
+            var response = await result.Content.ReadFromJsonAsync<RegisterResult>();
+
+            return response;
         }
 
         public async Task<Dictionary<string, List<Category>>> GetCategories()
         {
+            
             var data = await _client.GetAsync("categories");
             var categories =  await data.Content.ReadFromJsonAsync<Dictionary<string, List<Category>>>();
             return categories;
@@ -61,8 +109,21 @@ namespace CookTool.Client
         public async Task<User> GetUser(string id)
         {
             var userData = await _client.GetAsync($"users/{id}");
-            Console.WriteLine(userData);
             var user = await userData.Content.ReadFromJsonAsync<User>();
+            return user;
+        }
+
+        public async Task<User> GetCurrentUser()
+        {
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            
+            User user = null;
+            var userAuth = authState.User;
+            if (userAuth.Identity.IsAuthenticated)
+            {
+                var userData = await _client.PostAsJsonAsync($"users/current", userAuth.Identity.Name);
+                user = await userData.Content.ReadFromJsonAsync<User>();
+            } 
             return user;
         }
     }

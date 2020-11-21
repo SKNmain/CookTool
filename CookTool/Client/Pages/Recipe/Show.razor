@@ -30,18 +30,9 @@ else
                             {
                                 <tr>
                                     <td><input type="checkbox" /></td>
-                                    <td>@ingredient.Name</td>
-                                    <td>
-                                        @if (@ingredient.Quantity > 0)
-                                        {
-                                            @ingredient.Quantity;
-                                        }
-                                        else
-                                        {
-                                            @randomValue;
-                                        }
-                                    </td>
-                                    <td>@ingredientType.Key</td>
+                                    <td> @ingredient.Name </td>
+                                    <td> @RenderIngredientQuantity(ingredient.Quantity) </td>
+                                    <td> @ingredientType.Key </td>
                                 </tr>
                             }
                         }
@@ -55,14 +46,7 @@ else
                 <br />
             </div>
             <div class="col">
-                @if (recipe.Image == null)
-                {
-                    <img src="images/default_recipe.png" alt="No image for this recipe" style="width: 100%;" />
-                }
-                else
-                {
-                    <img src="data:image/bmp;base64, @(Convert.ToBase64String(recipe.Image))" alt="No image for this recipe" style="width: 100%;" />
-                }
+                <img src=@ImageStringRenderer.RenderImageString(recipe.Image, "images/default_recipe.png") alt="No image for this recipe" style="width: 100%;" />
                 <br /><br />
                 <div class="form-group">
                     <label> Preparation time: </label>
@@ -113,7 +97,6 @@ else
     private Modal ChangeIngredientAmountModal { get; set; }
     private int TempPortionSize { get; set; }
 
-    private String randomValue = "dowolna ilość";
     private CookTool.Shared.Models.Recipe recipe;
     private Dictionary<string, List<CookTool.Shared.Models.Ingredient>> ingredients;
     private List<CookTool.Shared.Models.Category> categories;
@@ -127,8 +110,8 @@ else
 
     public void ChangeIngredientAmount()
     {
-        double ratio = (double) TempPortionSize / recipe.PortionSize;
-        foreach(var ingredient in ingredients.Values)
+        double ratio = (double)TempPortionSize / recipe.PortionSize;
+        foreach (var ingredient in ingredients.Values)
         {
             ingredient.ForEach(ing => ing.Quantity *= ratio);
         }
@@ -136,4 +119,12 @@ else
         ChangeIngredientAmountModal.Close();
     }
 
+    private string RenderIngredientQuantity(double quantity)
+    {
+        if (quantity > 0)
+        {
+            return quantity.ToString();
+        }
+        return "Any quantity";
+    }
 }

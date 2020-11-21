@@ -1,42 +1,86 @@
 ﻿@page "/me"
+@using Microsoft.AspNetCore.Components.Authorization
 
-@if (user == null)
-{
-    <div class="spinner-border-sm" role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
-}
-else
-{
-    <h2>@user.Nickname</h2>
-    <hr />
+<AuthorizeView>
+    <Authorized>
+        @if (user == null)
+        {
+            <div class="spinner-border-sm" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        }
+        else
+        {
+            <h2>@user.Nickname</h2>
+            <hr />
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="form-group">
-                    <label> Email: </label>
-                    <input class="form-control" type="text" value="@user.Email" placeholder="email@example.com" readonly>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="form-group">
+                            <label> Email: </label>
+                            <input class="form-control" type="text" value="@user.Email" placeholder="email@example.com" readonly>
+                        </div>
+
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <span class="oi oi-paperclip" aria-hidden="true"></span>
+                                <a href="/myrecipes" style="color: orangered"> My Recipes </a>
+                            </li>
+                            <li class="list-group-item">
+                                <span class="oi oi-pin" aria-hidden="true"></span>
+                                <a href="mytips" style="color: orangered"> My Tips </a>
+                            </li>
+                            <li class="list-group-item">
+                                <span class="oi oi-list-rich" aria-hidden="true"></span>
+                                <a href="mylists" style="color: orangered"> My Lists </a>
+                            </li>
+                            <li class="list-group-item">
+                                <span class="oi oi-basket" aria-hidden="true"></span>
+                                <a href="mykitcheningredients" style="color: orangered"> My Kitchen Ingredients </a>
+                            </li>
+                            <li class="list-group-item">
+                                <span class="oi oi-calendar" aria-hidden="true"></span>
+                                <a href="myweekmenu" style="color: orangered"> My Week Menu </a>
+                            </li>
+                            <li class="list-group-item">
+                                <span class="oi oi-comment-square" aria-hidden="true"></span>
+                                <a href="mycomments" style="color: orangered">  My Comments </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <div class="row justify-content-center">
+                            <div class="rounded-circle" style=@style>
+                                <img src=@ImageStringRenderer.RenderImageString(user.Image, "images/default_user.png") alt="No image for this user" style="height: 300px;" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row justify-content-center">
+                            <span class="oi oi-image" aria-hidden="true"></span>
+                            <a href="" style="color: orangered"> Change photo </a> @*todo: modal to change photo and update user :D*@
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span class="oi oi-circle-x" aria-hidden="true"></span>
+                            <a href="" style="color: orangered"> Delete photo </a>@*// todo: are you sure you want to delete?*@
+                        </div>
+                        <br />
+                        <div class="row justify-content-center">
+                            <span class="oi oi-pencil" aria-hidden="true"></span>
+                            <a href="" style="color: orangered"> Change password </a> @*// todo: modal to change password and update user*@
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col">
-                @if (user.Image == null)
-                {
-                    <img src="images/default_user.png" alt="No image for this recipe" style="margin: 0 auto;" />
-                }
-                else
-                {
-                    <img src="data:image/bmp;base64, @(Convert.ToBase64String(user.Image))" alt="No image for this user" style="margin: 0 auto;" />
-                }
-                
-
-            </div>
-        </div>
-    </div>
-}
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
 
 
 @code {
+    private string style = "width:300px; height:300px; overflow:hidden;";
     [Inject]
     public IHttpClientRepository Client { get; set; }
 
@@ -44,6 +88,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        user = await Client.GetUser("2");
+        user = await Client.GetCurrentUser();
     }
 }
+

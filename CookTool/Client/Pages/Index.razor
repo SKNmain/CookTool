@@ -20,14 +20,7 @@ else
                             @foreach (var recipe in recipes)
                             {
                                 <div class="card" style="width: 90%;">
-                                    @if (recipe.Image == null)
-                                    {
-                                        <img class="card-img-top" src="images/default_recipe.png" alt="No image for this recipe" style="margin: 0 auto;" />
-                                    }
-                                    else
-                                    {
-                                        <img class="card-img-top" src="data:image/bmp;base64, @(Convert.ToBase64String(recipe.Image))" alt="No image for this recipe" style="margin: 0 auto;" />
-                                    }
+                                    <img class="card-img-top" src=@ImageStringRenderer.RenderImageString(recipe.Image, "images/default_recipe.png") alt="No image for this recipe!" style="margin: 0 auto;" />
                                     <div class="card-body">
                                         <h4 class="card-title">@recipe.Title</h4>
                                         <a href="recipe/@recipe.Id.ToString()" class="btn btn-dark">View more</a>
@@ -50,14 +43,7 @@ else
                     @foreach (var tip in tips)
                     {
                         <div class="card">
-                            @if (tip.Image == null)
-                            {
-                                <img class="card-img-top" src="images/default_recipe.png" alt="No image for this recipe" style="margin: 0 auto;" />
-                            }
-                            else
-                            {
-                                <img class="card-img-top" src="data:image/bmp;base64, @(Convert.ToBase64String(tip.Image))" alt="No image for this recipe" style="margin: 0 auto;" />
-                            }
+                            <img class="card-img-top" src=@ImageStringRenderer.RenderImageString(tip.Image, "images/default_tip.png") alt="No image for this tip!" style="margin: 0 auto;" />
                             <div class="card-body">
                                 <h4 class="card-title">@tip.Title</h4>
                                 <a href="tip/@tip.Id.ToString()" class="btn btn-dark">View more</a>

@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CookTool.Shared;
 using CookTool.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CookTool.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoriesController : ControllerBase
     {
         private readonly CategoriesRepository categoriesRepository = new CategoriesRepository();

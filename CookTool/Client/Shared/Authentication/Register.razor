@@ -1,0 +1,67 @@
+﻿@page "/register"
+@inject NavigationManager NavigationManager
+
+<h2> Registration </h2>
+<hr />
+
+@if (!String.IsNullOrEmpty(Error))
+{
+    <div class="alert alert-danger" role="alert">
+        <p>@Error</p>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Please enter your details</h5>
+        <EditForm Model="RegisterModel" OnValidSubmit="HandleRegistration">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="nickname">Nickname</label>
+                <InputText Id="nickname" class="form-control" @bind-Value="RegisterModel.Nickname" />
+                <ValidationMessage For="@(() => RegisterModel.Nickname)" />
+            </div>
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <InputText Id="email" class="form-control" @bind-Value="RegisterModel.Email" />
+                <ValidationMessage For="@(() => RegisterModel.Email)" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText Id="password" type="password" class="form-control" @bind-Value="RegisterModel.Password" />
+                <ValidationMessage For="@(() => RegisterModel.Password)" />
+            </div>
+            <div class="form-group">
+                <label for="password">Confirm Password</label>
+                <InputText Id="password" type="password" class="form-control" @bind-Value="RegisterModel.ConfirmPassword" />
+                <ValidationMessage For="@(() => RegisterModel.ConfirmPassword)" />
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    public IHttpClientRepository Client { get; set; }
+
+    private CookTool.Shared.Authentication.RegisterModel RegisterModel = new CookTool.Shared.Authentication.RegisterModel();
+    private string Error;
+
+    private async Task HandleRegistration()
+    {
+        var result = await Client.Register(RegisterModel);
+
+        if (result.Successful)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            Error = result.Error;
+        }
+    }
+
+}
