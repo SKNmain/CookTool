@@ -1,0 +1,64 @@
+﻿@page "/randomrecipe"
+@using Microsoft.AspNetCore.Components.Authorization
+@using CookTool.Client.Shared.Helpers
+
+<AuthorizeView>
+    <Authorized>
+        <h2> Random recipes by owned ingredients </h2>
+        <hr />
+
+        @if (Recipes == null)
+        {
+            <div class="spinner-border-sm" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        }
+        else if (Recipes.Count > 0)
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Title</th>
+                        <th>Show</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (CookTool.Shared.Models.Recipe recipe in Recipes)
+                    {
+                        <tr>
+                            <td>
+                                <div class="rounded-circle" style=@ImageHelper.ImageStyle>
+                                    <img src=@ImageHelper.RenderImageString(recipe.Image, "images/default_recipe.png") alt="No image for this user" style="height: 45px;" />
+                                </div>
+                            </td>
+                            <td> @recipe.Title </td>
+                            <td>
+                                <a class="btn btn-success" href="recipe/@recipe.Id.ToString()">Show</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No recipes here!</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+    private List<CookTool.Shared.Models.Recipe> Recipes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Recipes = await Client.GetRandomRecipes(); //it gets only 5 recipes
+    }
+}

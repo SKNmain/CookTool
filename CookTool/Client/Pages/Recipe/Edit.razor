@@ -1,8 +1,28 @@
 ﻿@page "/recipe/edit/{id}"
 @using Microsoft.AspNetCore.Components.Authorization
+@using CookTool.Client.Shared.Helpers
+@using CookTool.Client.Shared.Models.SelectedItems
+@inject NavigationManager nav
 
 <AuthorizeView>
     <Authorized>
+        @if (recipe == null || selectedCategories == null || ingredients == null || units == null)
+        {
+            <div class="spinner-border-sm" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        }
+        else
+        {
+            <h3> Update recipe </h3>
+            <hr />
+
+            <Form ButtonText="Update" recipe="@recipe"
+                  categories="@selectedCategories"
+                  ingredients="@ingredients"
+                  units="@units"
+                  OnValidSubmit="@(() => UpdateRecipe())" />
+        }
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin />
@@ -12,6 +32,34 @@
 @code {
     [Parameter]
     public string Id { get; set; }
+
+    private CookTool.Shared.Models.Recipe recipe;
+    private List<CategorySelect> selectedCategories = new List<CategorySelect>();
+    private List<CookTool.Shared.Models.Category> categories;
+    private List<CookTool.Shared.Models.Category> recipeCategories;
+    private List<CookTool.Shared.Models.Ingredient> ingredients;
+    private List<CookTool.Shared.Models.MeasurementUnit> units;
+
     [Inject]
-    public IHttpClientRepository Client { get; set; }
+    public AbstractHttpClientRepository Client { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        recipe = await Client.GetRecipe(Id);
+        ingredients = await Client.GetRecipeIngredientsWithoutGrouping(Id);
+        units = await Client.GetMeasurementUnits();
+        categories = await Client.GetCategories();
+        recipeCategories = await Client.GetRecipeCategories(Id);
+
+        foreach (var cat in categories)
+        {
+            selectedCategories.Add(new CategorySelect(cat.Id, cat.Name, recipeCategories.Contains(cat)));
+        }
+    }
+
+    async Task UpdateRecipe()
+    {
+        await Client.UpdateUserRecipe(recipe, RecipeHelper.PrepareCategories(categories, selectedCategories), ingredients);
+        nav.NavigateTo("myrecipes");
+    }
 }

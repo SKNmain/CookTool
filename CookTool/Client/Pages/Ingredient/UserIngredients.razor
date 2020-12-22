@@ -1,0 +1,103 @@
+﻿@page "/mykitcheningredients"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IJSRuntime JsRuntime
+
+<AuthorizeView>
+    <Authorized>
+        <h3>My Kitchen Ingredients</h3>
+        <hr />
+
+        <div class="form-group">
+            <button class="btn btn-warning" @onclick="() => AddIngredientModal.Open()">Add new ingredient</button>
+        </div>
+        <Modal @ref="AddIngredientModal">
+            <Title>Add new ingredient placed in your kitchen!</Title>
+            <Body>
+                <IngredientForm units="@units" item="@item"/>
+            </Body>
+            <Footer>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="AddIngredient">Add</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="AddIngredientModal.Close">Close</button>
+            </Footer>
+        </Modal>
+
+        <br>
+        @if (userIngredients == null)
+        {
+            <div class="spinner-border-sm" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        }
+        else if (userIngredients.Count() == 0)
+        {
+            <text>No Ingredients Found.</text>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ui_with_unit in userIngredients)
+                    {
+                        foreach (var ui in ui_with_unit.Value)
+                        {
+                            <tr>
+                                <td>@ui.Name</td>
+                                <td>@ui.Quantity</td>
+                                <td>@ui_with_unit.Key</td>
+                                <td>
+                                    <button class="btn btn-danger" @onclick="@(() => Delete(ui))">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+
+    private Dictionary<string, List<CookTool.Shared.Models.UserIngredient>> userIngredients;
+    private List<CookTool.Shared.Models.MeasurementUnit> units;
+    private Modal AddIngredientModal = new Modal();
+    private CookTool.Client.Shared.Models.IngredientItem item;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = new CookTool.Client.Shared.Models.IngredientItem();
+        units = await Client.GetMeasurementUnits();
+        userIngredients = await Client.GetUserIngredients();
+    }
+
+    private async Task Delete(CookTool.Shared.Models.UserIngredient ui)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete '{ui.Name}' ingredient?");
+        if (confirmed)
+        {
+            await Client.DeleteUserIngredient(ui.Id);
+            await OnInitializedAsync();
+        }
+    }
+
+    private async Task AddIngredient()
+    {
+        await Client.AddUserIngredient(item);
+        item = new CookTool.Client.Shared.Models.IngredientItem();
+        AddIngredientModal.Close();
+        await OnInitializedAsync();
+    }
+}

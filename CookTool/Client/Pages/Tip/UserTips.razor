@@ -1,0 +1,86 @@
+﻿@page "/mytips"
+@using Microsoft.AspNetCore.Components.Authorization
+@using CookTool.Client.Shared.Helpers
+@inject IJSRuntime JsRuntime
+
+<AuthorizeView>
+    <Authorized>
+        <h3> My Tips </h3>
+        <hr />
+
+        <div class="form-group">
+            <a class="btn btn-success" href="tip/create"><i class="oi oi-plus"></i> Add New Tip</a>
+        </div>
+        <br>
+
+        @if (tips == null)
+        {
+            <text>Loading...</text>
+        }
+        else if (tips.Count() == 0)
+        {
+            <text>No tips Found.</text>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Title</th>
+                        <th>Show</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (CookTool.Shared.Models.Tip tip in tips)
+                    {
+                        <tr>
+                            <td>
+                                <div class="rounded-circle" style=@ImageHelper.ImageStyle>
+                                    <img src=@ImageHelper.RenderImageString(tip.Image, "images/default_tip.png") alt="No image for this user" style="height: 45px;" />
+                                </div>
+                            </td>
+                            <td> @tip.Title </td>
+                            <td>
+                                <a class="btn btn-success" href="tip/@tip.Id.ToString()">Show</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-warning" href="tip/edit/@tip.Id.ToString()">Edit</a>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" @onclick="@(() => Delete(tip))">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+
+    List<CookTool.Shared.Models.Tip> tips { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tips = await Client.GetUserTips();
+    }
+
+    async Task Delete(CookTool.Shared.Models.Tip tip)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete '{tip.Title}' tip?");
+        if (confirmed)
+        {
+            await Client.DeleteUserTip(tip.Id);
+            await OnInitializedAsync();
+        }
+    }
+}

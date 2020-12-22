@@ -1,0 +1,41 @@
+﻿@page "/tip/{id}"
+@using CookTool.Client.Shared.Helpers
+
+@if (tip == null)
+{
+    <div class="spinner-border-sm" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    <h2> @tip.Title </h2>
+    <hr />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8">
+                <textarea class="form-control" rows="12" placeholder="@tip.Content" readonly></textarea>
+                <br />
+            </div>
+            <div class="col">
+                <img src=@ImageHelper.RenderImageString(tip.Image, "images/default_tip.png") alt="No image for this recipe" style="width: 100%;" />
+                <input class="form-control m-2" type="number" value="@tip.Rating" placeholder="1" readonly>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+
+    private CookTool.Shared.Models.Tip tip;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tip = await Client.GetTip(Id);
+    }
+
+}

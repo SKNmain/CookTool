@@ -3,7 +3,7 @@
 
 @code {
     [Inject]
-    public IHttpClientRepository Client { get; set; }
+    public AbstractHttpClientRepository Client { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

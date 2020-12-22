@@ -11,6 +11,8 @@ namespace CookTool.Shared.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int TypeId { get; set; }
+         
+        [Reference(ReferenceType.Foreign, ColumnName ="TypeId", ReferenceMemberName = "TypeId")]
+        public CategoryType CategoryType { get; set; }
     }
 }

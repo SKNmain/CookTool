@@ -1,8 +1,20 @@
 ﻿@page "/recipe/create"
 @using Microsoft.AspNetCore.Components.Authorization
+@using CookTool.Client.Shared.Helpers 
+@using CookTool.Client.Shared.Models.SelectedItems 
+@inject NavigationManager nav
 
 <AuthorizeView>
     <Authorized>
+        <h3> Create new recipe</h3>
+        <hr />
+
+        <Form ButtonText="Create" recipe="@recipe"
+              categories="@selectedCategories"
+              ingredients="@ingredients"
+              units="@units"
+              OnValidSubmit="@(() => CreateRecipe())" />
+
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin />
@@ -10,5 +22,29 @@
 </AuthorizeView>
 
 @code {
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+    private CookTool.Shared.Models.Recipe recipe = new CookTool.Shared.Models.Recipe();
+    private List<CategorySelect> selectedCategories = new List<CategorySelect>();
+    private List<CookTool.Shared.Models.Category> categories;
+    private List<CookTool.Shared.Models.Ingredient> ingredients;
+    private List<CookTool.Shared.Models.MeasurementUnit> units;
 
+    protected override async Task OnInitializedAsync()
+    {
+        ingredients = new List<CookTool.Shared.Models.Ingredient>();
+        categories = await Client.GetCategories();
+        units = await Client.GetMeasurementUnits();
+
+        foreach (var cat in categories)
+        {
+            selectedCategories.Add(new CategorySelect(cat.Id, cat.Name, false));
+        }
+    }
+
+    private async Task CreateRecipe()
+    {
+        await Client.CreateUserRecipe(recipe, RecipeHelper.PrepareCategories(categories, selectedCategories), ingredients);
+        nav.NavigateTo("myrecipes");
+    }
 }

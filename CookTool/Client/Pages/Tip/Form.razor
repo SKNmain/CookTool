@@ -1,0 +1,35 @@
+﻿@using CookTool.Client.Shared.Helpers
+
+<EditForm Model="@tip" OnValidSubmit="@OnValidSubmit">
+    <div class="form-group">
+        <div class="form-row">
+            <label>Upload image: </label>
+            <InputFile OnChange="@((files) => ImageHelper.ReadImage(files, file, tip))" />
+            @if (file != null)
+            {
+                <strong>File Selected: </strong> @file.Name
+            }
+        </div>
+    </div>
+    <br /><br />
+    <div class="form-row">
+        <label>Title:</label>
+        <input type="text" class="form-control" @bind-value="@tip.Title" />
+    </div>
+    <br /><br />
+    <div class="form-row">
+        <label>Data :</label>
+        <textarea class="form-control" rows="12" @bind="@tip.Content"></textarea>
+    </div>
+    <br /><br />
+    <button type="submit" class="btn btn-success">
+        @ButtonText
+    </button>
+</EditForm>
+
+@code {
+    [Parameter] public CookTool.Shared.Models.Tip tip { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    private IFileListEntry file;
+}

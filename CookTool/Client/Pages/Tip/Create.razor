@@ -1,0 +1,29 @@
+﻿@page "/tip/create"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager nav
+
+<AuthorizeView>
+    <Authorized>
+        <h3> Create new tip</h3>
+        <hr />
+        <Form ButtonText="Create" tip="@tip"
+              OnValidSubmit="@(() => CreateTip())" />
+
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+    private CookTool.Shared.Models.Tip tip = new CookTool.Shared.Models.Tip();
+
+
+    private async Task CreateTip()
+    {
+        await Client.CreateUserTip(tip);
+        nav.NavigateTo("mytips");
+    }
+}

@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization;
-
+@using CookTool.Client.Shared.Helpers
 @using System.Security.Claims;
+
 
 <AuthorizeView>
     <Authorized>
@@ -11,8 +12,8 @@
         else
         {
             <div class="ml-md-0">
-                <div class="rounded-circle" style=@style>
-                    <img src=@ImageStringRenderer.RenderImageString(user.Image, "images/default_user.png") alt="No image for this user" style="height: 45px;" />
+                <div class="rounded-circle" style=@ImageHelper.ImageStyle>
+                    <img src=@ImageHelper.RenderImageString(user.Image, "images/default_user.png") alt="No image for this user" style="height: 45px;" />
                 </div>
             </div>
             <div class="ml-md-2">
@@ -28,7 +29,6 @@
 </AuthorizeView>
 
 @code{
-    private string style = "width:45px; height:45px; overflow:hidden;";
     private CookTool.Shared.Authentication.UserView user = null;
 
     [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
@@ -44,9 +44,8 @@
             var nickname = userAuth.FindAll(ClaimTypes.Name).First().Value;
 
             user =  new CookTool.Shared.Authentication.UserView(nickname, Convert.FromBase64String(image));
-
-            this.StateHasChanged();
         }
+        this.StateHasChanged();
     }
 
 }

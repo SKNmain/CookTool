@@ -1,0 +1,101 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using System.Threading;
+@inject IJSRuntime JsRuntime
+
+@page "/mylists"
+
+<AuthorizeView>
+    <Authorized>
+        <h3>My recipe lists</h3>
+        <hr />
+
+        <div class="form-group">
+            <a class="btn btn-success" @onclick="() => CreateListModal.Open()"><i class="oi oi-plus"></i> Add Recipe List</a>
+        </div>
+
+        <Modal @ref="CreateListModal">
+            <Title>Create new recipe list!</Title>
+            <Body>
+                <input type="text" @bind="@recipeList.Title" />
+            </Body>
+            <Footer>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => Create()">Create</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => CreateListModal.Close()">Close</button>
+            </Footer>
+        </Modal>
+
+        @if (recipeLists == null)
+        {
+            <div class="spinner-border-sm" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        }
+        else if (recipeLists.Count > 0)
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Show Recipes</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (CookTool.Shared.Models.RecipeList recipeList in recipeLists)
+                    {
+                        <tr>
+                            <td> @recipeList.Title </td>
+                            <td>
+                                <a class="btn btn-success" href="recipelist/@recipeList.Title">Show Recipes</a>
+                            </td>
+                            <td>
+                                @if (recipeList.Title != "Fave")
+                                {
+                                    <button class="btn btn-danger" @onclick="@(() => Remove(recipeList))">Delete</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No recipe lists here!</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+    private Modal CreateListModal { get; set; }
+    private CookTool.Shared.Models.RecipeList recipeList = new CookTool.Shared.Models.RecipeList();
+
+    private List<CookTool.Shared.Models.RecipeList> recipeLists;
+
+    protected override async Task OnInitializedAsync()
+    {
+        recipeLists = await Client.GetUserRecipeLists();
+    }
+
+    async Task Remove(CookTool.Shared.Models.RecipeList recipeList)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {recipeList.Title} recipe list?");
+        if (confirmed)
+        {
+            await Client.DeleteRecipeList(recipeList.Id);
+            await OnInitializedAsync();
+        }
+    }
+
+    private async Task Create()
+    {
+        await Client.AddRecipeList(recipeList);
+        CreateListModal.Close();
+        await OnInitializedAsync();
+    }
+}

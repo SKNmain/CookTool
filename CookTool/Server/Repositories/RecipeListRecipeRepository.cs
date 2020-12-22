@@ -26,6 +26,11 @@ namespace CookTool.Server.Repositories
             db.Insert(record);
         }
 
+        public void DeleteSpecialRecord(int recipeid, int recipelistid)
+        {
+            db.Execute($"DELETE FROM recipelistrecipe WHERE recipelistid = {recipelistid} AND recipeid = {recipeid}");
+        }
+
         public void DeleteRecord(int id)
         {
             throw new NotImplementedException();

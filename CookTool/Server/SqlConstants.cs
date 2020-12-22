@@ -10,9 +10,9 @@ namespace CookTool.Server
     {
         // --- CATEGORIES REPOSITORY --- //
 
-        public static readonly string ALL_CATEGORIES = "SELECT * FROM categories";
+        public static readonly string ALL_CATEGORIES = "SELECT c.id, c.Name, ct.Id, ct.typename FROM categories AS c inner join CategoryTypes AS ct ON c.typeid = ct.id";
         public static readonly Func<string, string> ALL_CATEGORY_TYPE_CATEGORIES = (string name) 
-            => $"SELECT * FROM Categories AS c INNER JOIN CategoryTypes AS ct ON c.typeid = ct.id WHERE ct.typename = '{name}'";
+            => $"SELECT c.id, c.Name, ct.Id, ct.typename FROM Categories AS c INNER JOIN CategoryTypes AS ct ON c.typeid = ct.id WHERE ct.typename = '{name}'";
 
         // --- CATEGORY TYPES REPOSITORY --- //
 
@@ -45,7 +45,7 @@ namespace CookTool.Server
         public static readonly Func<int, string> USER_RECIPE_LISTS = (userId)
             => $"SELECT * FROM RecipeLists WHERE userid = {userId}";
         public static readonly Func<int, string, string> USER_RECIPE_LIST_BY_TITLE = (userId, title)
-            =>  $"SELECT * FROM RecipeLists WHERE userid = {userId} AND title = {title}";
+            =>  $"SELECT * FROM RecipeLists WHERE userid = {userId} AND title = '{title}'";
         public static readonly Func<int, string> USER_RECIPE_LIST_FAVE = (userId)
             => $"SELECT * FROM RecipeLists WHERE userid = {userId} AND title = 'Fave'";
         public static readonly Func<int, string> RECIPE_LIST_RECIPES = (id)
@@ -59,7 +59,7 @@ namespace CookTool.Server
         public static readonly Func<int, string> RECIPE_CATEGORIES = (id)
             => $"SELECT * FROM categories AS c INNER JOIN recipecategory AS rc ON rc.categoryid = c.id WHERE rc.recipeid = {id}";
         public static readonly Func<int, string> RECIPE_INGREDIENTS = (id)
-            => $"SELECT * FROM Ingredients AS i INNER JOIN RecipeIngredient AS ri ON i.id = ri.ingredientid WHERE ri.recipeid = {id}";
+            => $"SELECT * FROM Ingredients AS i WHERE i.recipeid = {id}";
 
         // --- TIP COMMENTS REPOSITORY --- //
 
@@ -93,6 +93,10 @@ namespace CookTool.Server
 
         public static readonly Func<int, string> USER_INGREDIENTS = (userid)
             => $"SELECT * FROM UserIngredients WHERE userid = {userid}";
+
+        // --- RECIPE CATEGORY REPOSITORY --- //
+
+        public static readonly string ALL_RECIPE_CATEGORIES = "SELECT * FROM RecipeCategory";
 
     }
 }

@@ -1,0 +1,114 @@
+﻿@page "/recipelist/{title}/addrecipe"
+@using CookTool.Client.Shared.Helpers
+@using CookTool.Client.Shared.Models.SelectedItems
+@inject NavigationManager nav
+
+@if (recipeList == null && recipes == null && recipesSelected == null)
+{
+    <div class="spinner-border-sm" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    <h3> Add recipe to '@recipeList.Title' list</h3>
+    <hr />
+
+    <div class="form-group">
+        <a class="btn btn-success" @onclick="AddSelectedRecipes"><i class="oi oi-plus"></i> Add selected recipes to list</a>
+    </div>
+
+    @if (recipesSelected.Count > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Selected</th>
+                    <th>Title</th>
+                    <th>Show</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var recipe in recipesSelected)
+                {
+                    <tr>
+                        <td>
+                            @if (recipe.IsDisabled)
+                            {
+                                <input type="checkbox" id="@recipe.Id" disabled />
+                            }
+                            else
+                            {
+                                <input type="checkbox" id="@recipe.Id" @bind="@recipe.IsSelected" />
+                            }
+                        </td>
+                        <td>
+                            @recipe.Title
+                        </td>
+                        <td>
+                            <a class="btn btn-success" href="recipe/@recipe.Id.ToString()">Show</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No recipes here!</p>
+    }
+}
+
+@code {
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    private List<CookTool.Shared.Models.Recipe> recipes;
+    private List<CookTool.Shared.Models.Recipe> recipeListRecipes;
+    private CookTool.Shared.Models.RecipeList recipeList;
+    private List<RecipeSelect> recipesSelected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        recipeList = await Client.GetUserRecipeList(Title);
+        recipeListRecipes = await Client.GetRecipeListRecipes(recipeList.Id);
+        recipes = await Client.GetRecipes();
+        recipesSelected = new List<RecipeSelect>();
+
+        recipes.ForEach(recipe =>
+        {
+            recipesSelected.Add(new RecipeSelect(recipe.Id, recipe.Title, false, RecipeHelper.IsDisabled(recipe, recipeListRecipes)));
+        });
+    }
+
+    private async void AddSelectedRecipes()
+    {
+        var items = PrepareData();
+        foreach (var item in items)
+        {
+            await Client.AddRecipeToRecipeList(item);
+        }
+
+        nav.NavigateTo($"/recipelist/{Title}");
+    }
+
+    private List<CookTool.Shared.Models.RecipeListRecipe> PrepareData()
+    {
+        var recipeListRecipeList = new List<CookTool.Shared.Models.RecipeListRecipe>();
+
+        recipesSelected
+            .FindAll(r => r.IsSelected == true)
+            .ForEach(rec =>
+            {
+                var recipeListRecipe = new CookTool.Shared.Models.RecipeListRecipe();
+                recipeListRecipe.RecipeId = rec.Id;
+                recipeListRecipe.RecipeListId = recipeList.Id;
+                recipeListRecipeList.Add(recipeListRecipe);
+            });
+
+        return recipeListRecipeList;
+    }
+}

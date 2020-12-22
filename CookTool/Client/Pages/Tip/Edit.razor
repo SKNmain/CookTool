@@ -1,0 +1,45 @@
+﻿@page "/tip/edit/{id}"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager nav
+
+<AuthorizeView>
+    <Authorized>
+        @if (tip == null)
+        {
+            <div class="spinner-border-sm" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        }
+        else
+        {
+            <h3> Update tip </h3>
+            <hr />
+
+            <Form ButtonText="Update" tip="@tip"
+                  OnValidSubmit="@(() => UpdateTip())" />
+        }
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+
+    private CookTool.Shared.Models.Tip tip;
+
+    protected async override Task OnInitializedAsync()
+    {
+        tip = await Client.GetTip(Id);
+    }
+
+    async Task UpdateTip()
+    {
+        await Client.UpdateUserTip(tip);
+        nav.NavigateTo("mytips");
+    }
+}

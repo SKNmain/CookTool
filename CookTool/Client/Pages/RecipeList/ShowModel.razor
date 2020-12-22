@@ -1,0 +1,116 @@
+﻿@inject IJSRuntime JsRuntime
+@inject NavigationManager nav
+@using CookTool.Client.Shared.Helpers
+
+@if (RecipeList == null && Recipes == null)
+{
+    <div class="spinner-border-sm" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    <h2> @RecipeList.Title </h2>
+    <hr />
+
+    <div class="form-group">
+        <a class="btn btn-success" href="recipelist/@RecipeList.Title/addrecipe"><i class="oi oi-plus"></i> Add Recipe to List</a>
+    </div>
+
+    @if (RecipeList.Title != "Fave")
+    {
+        <div class="form-group">
+            <a class="btn btn-success" @onclick="() => EditListModal.Open()"><i class="oi oi-plus"></i> Update Recipe List</a>
+        </div>
+
+        <Modal @ref="EditListModal">
+            <Title>Update current recipe list!</Title>
+            <Body>
+                <input type="text" @bind="@RecipeList.Title" />
+            </Body>
+            <Footer>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => Edit()">Update</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => EditListModal.Close()">Close</button>
+            </Footer>
+        </Modal>
+    }
+
+    <br>
+
+
+    @if (Recipes.Count > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Title</th>
+                    <th>Public</th>
+                    <th>Show</th>
+                    <th>Delete From List</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (CookTool.Shared.Models.Recipe recipe in Recipes)
+                {
+                    <tr>
+                        <td>
+                            <div class="rounded-circle" style=@ImageHelper.ImageStyle>
+                                <img src=@ImageHelper.RenderImageString(recipe.Image, "images/default_recipe.png") alt="No image for this user" style="height: 45px;" />
+                            </div>
+                        </td>
+                        <td> @recipe.Title </td>
+                        <td> @RecipeHelper.IsPublic(recipe.IsPrivate) </td>
+                        <td>
+                            <a class="btn btn-success" href="recipe/@recipe.Id.ToString()">Show</a>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" @onclick="@(() => Remove(recipe))">Remove</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No recipes here!</p>
+    }
+}
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+
+    private CookTool.Shared.Models.RecipeList RecipeList;
+    private List<CookTool.Shared.Models.Recipe> Recipes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        RecipeList = await Client.GetUserRecipeList(Title);
+        Recipes = await Client.GetRecipeListRecipes(RecipeList.Id);
+    }
+
+    private Modal EditListModal { get; set; }
+
+    async Task Remove(CookTool.Shared.Models.Recipe recipe)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to remove {recipe.Title} recipe from {RecipeList.Title} list?");
+        if (confirmed)
+        {
+            await Client.RemoveRecipeFromRecipeList(RecipeList.Id, recipe.Id);
+            await OnInitializedAsync();
+        }
+    }
+
+    async Task Edit()
+    {
+        await Client.EditRecipeList(RecipeList.Id, RecipeList);
+        Title = RecipeList.Title;
+        EditListModal.Close();
+        await OnInitializedAsync();
+    }
+}

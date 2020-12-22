@@ -21,9 +21,9 @@ namespace CookTool.Server.Repositories
             throw new NotImplementedException();
         }
 
-        public IList<Ingredient> GetUserIngredients(int userid)
+        public IList<UserIngredient> GetUserIngredients(int userid)
         {
-            return db.Fetch<Ingredient>(SqlConstants.USER_INGREDIENTS(userid));
+            return db.Fetch<UserIngredient>(SqlConstants.USER_INGREDIENTS(userid));
         }
 
         public void AddRecord(UserIngredient record)
@@ -33,7 +33,7 @@ namespace CookTool.Server.Repositories
 
         public void DeleteRecord(int id)
         {
-            throw new NotImplementedException();
+            db.Delete<UserIngredient>(id);
         }
 
         public void UpdateRecord(int id, UserIngredient record)

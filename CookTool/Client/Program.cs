@@ -21,7 +21,7 @@ namespace CookTool.Client
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:44394/api/") });
             builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
-            builder.Services.AddScoped<IHttpClientRepository, HttpClientRepository>();
+            builder.Services.AddScoped<AbstractHttpClientRepository, HttpClientRepository>();
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddAuthorizationCore();
 

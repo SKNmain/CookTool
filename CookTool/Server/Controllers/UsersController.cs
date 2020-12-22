@@ -5,8 +5,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using CookTool.Server.Helpers;
 using CookTool.Server.Repositories;
 using CookTool.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Pkcs;
@@ -26,6 +28,7 @@ namespace CookTool.Server.Controllers
         }
 
         [HttpPost("current")]
+        [Authorize]
         public User GetUserByEmail([FromBody] string email)
         {
             return usersRepository.GetRecordByEmail(email);
@@ -39,16 +42,17 @@ namespace CookTool.Server.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public void Put(int id, [FromBody] User user)
         {
             //user.Password = Encrypt(user.Password);
             usersRepository.UpdateRecord(id, user);
         }
 
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            usersRepository.DeleteRecord(id);
-        }
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //    usersRepository.DeleteRecord(id);
+        //}
     }
 }

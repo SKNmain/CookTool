@@ -16,7 +16,7 @@ namespace CookTool.Shared.Models
         public DateTime PreparationTime { get; set; }
         public bool IsPrivate { get; set; }
         public string Notes { get; set; }
-        public int Rating { get; set; }
+        public double Rating { get; set; }
         public int UserId { get; set; }
         public byte[] Image { get; set; }
     }

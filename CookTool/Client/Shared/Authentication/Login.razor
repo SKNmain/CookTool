@@ -35,7 +35,7 @@
 
 @code {
     [Inject]
-    public IHttpClientRepository Client { get; set; }
+    public AbstractHttpClientRepository Client { get; set; }
 
     private CookTool.Shared.Authentication.LoginModel loginModel = new CookTool.Shared.Authentication.LoginModel();
     private string Error = "";

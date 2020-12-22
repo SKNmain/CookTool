@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+@page "/recipelist/{title}"
+
+<AuthorizeView>
+    <Authorized>
+        <ShowModel Title="@Title"/>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+}

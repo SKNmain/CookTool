@@ -45,7 +45,7 @@
 
 @code {
     [Inject]
-    public IHttpClientRepository Client { get; set; }
+    public AbstractHttpClientRepository Client { get; set; }
 
     private CookTool.Shared.Authentication.RegisterModel RegisterModel = new CookTool.Shared.Authentication.RegisterModel();
     private string Error;

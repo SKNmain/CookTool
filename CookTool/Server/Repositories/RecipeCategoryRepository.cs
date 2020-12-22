@@ -13,7 +13,7 @@ namespace CookTool.Server.Repositories
 
         public IList<RecipeCategory> GetAllRecords()
         {
-            throw new NotImplementedException();
+            return db.Fetch<RecipeCategory>(SqlConstants.ALL_RECIPE_CATEGORIES);
         }
 
         public RecipeCategory GetRecordById(int id)
@@ -29,6 +29,11 @@ namespace CookTool.Server.Repositories
         public void DeleteRecord(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public void DeleteRecord(int recipeid, int categoryid)
+        {
+            db.Execute($"DELETE FROM recipecategory WHERE recipeid = {recipeid} AND categoryid = {categoryid}");
         }
 
         public void UpdateRecord(int id, RecipeCategory record)

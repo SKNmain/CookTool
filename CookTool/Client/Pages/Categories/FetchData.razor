@@ -10,24 +10,20 @@
 }
 else
 {
-    @foreach (var categoryType in categories)
+    <ul class="list-group">
+    @foreach (var category in categories)
     {
-            <h4> @categoryType.Key </h4>
-            <ul class="list-group">
-                @foreach (var category in categoryType.Value)
-                {
-                    <li class="list-group-item"> @category.Name </li>
-                }
-            </ul>
-    }
 
+            <li class="list-group-item"> @category.Name </li> @category.CategoryType.TypeName
+    }
+    </ul>
 }
 
 @code {
     [Inject]
-    public IHttpClientRepository Client { get; set; }
+    public AbstractHttpClientRepository Client { get; set; }
 
-    private Dictionary<string, List<CookTool.Shared.Models.Category>> categories;
+    private List<CookTool.Shared.Models.Category> categories;
 
     protected override async Task OnInitializedAsync()
     {

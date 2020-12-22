@@ -8,30 +8,44 @@ using Microsoft.AspNetCore.Mvc;
 using CookTool.Shared;
 using CookTool.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
 
 namespace CookTool.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class CategoriesController : ControllerBase
     {
         private readonly CategoriesRepository categoriesRepository = new CategoriesRepository();
         private readonly CategoryTypesRepository categoryTypesRepository = new CategoryTypesRepository();
 
-        private IDictionary<string, IList<Category>> categories = new Dictionary<string, IList<Category>>();
+        private Dictionary<string, IList<Category>> categoriesWithType;
+        private List<Category> categories;
 
-        public IDictionary<string, IList<Category>> GetCategories()
+        public List<Category> GetCategories()
         {
-            if (categories.Count == 0) 
+            if (categories != null) return categories;
+            categories = new List<Category>();
+            foreach (var category in categoriesRepository.GetAllRecords())
             {
-                foreach(var categoryType in categoryTypesRepository.GetAllRecords())
-                {
-                    categories.Add(categoryType.TypeName, categoriesRepository.GetAllRecordsByCategoryTypeName(categoryType.TypeName));
-                }
+                categories.Add(category);
             }
             return categories;
         }
+
+        [HttpGet("withtype")]
+        public Dictionary<string, IList<Category>> GetCategoriesWithType()
+        {
+            if (categoriesWithType != null) return categoriesWithType;
+            categoriesWithType = new Dictionary<string, IList<Category>>();
+            foreach(var categoryType in categoryTypesRepository.GetAllRecords())
+            {
+                categoriesWithType.Add(categoryType.TypeName, categoriesRepository.GetAllRecordsByCategoryTypeName(categoryType.TypeName));
+            }
+            return categoriesWithType;
+        }
+
+       
 
         [HttpGet("{id}")]
         public Category GetCategory(int id)

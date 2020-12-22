@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using CookTool.Server.Helpers;
 using CookTool.Server.Repositories;
 using CookTool.Shared.Authentication;
 using CookTool.Shared.Models;
@@ -17,6 +18,7 @@ namespace CookTool.Server.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly UsersRepository usersRepository = new UsersRepository();
+        private readonly RecipeListsRepository recipeListsRepository = new RecipeListsRepository();
 
         public AuthController(IConfiguration configuration)
         {
@@ -28,7 +30,10 @@ namespace CookTool.Server.Controllers
         {
             var newUser = new User { Nickname = model.Nickname, Email = model.Email, Password = CryptHelper.Encrypt(model.Password) };
         
-            try{ usersRepository.AddRecord(newUser); }
+            try{ 
+                usersRepository.AddRecord(newUser);
+                PrepareFaveRecipeList(newUser.Email);
+            }
             catch(Exception e)
             {
                 return new RegisterResult { Successful = false, Error = e.Message };
@@ -41,36 +46,22 @@ namespace CookTool.Server.Controllers
         {
             var user = usersRepository.GetRecordByEmail(model.Email);
 
-            if(user == null || !IsPasswordCorrect(model.Password, user.Password))
+            if(user == null || !AuthHelper.IsPasswordCorrect(model.Password, user.Password))
             {
                 return new LoginResult { Successful = false, Error = "Email or password are invalid"};
             }
 
             var claims = new[] { new Claim(ClaimTypes.Name, model.Email) };
 
-            return new LoginResult { Successful = true, Token = GenerateToken(claims), Nickname = user.Nickname, Image = Convert.ToBase64String(user.Image) };
+            return new LoginResult { Successful = true, Token = AuthHelper.GenerateToken(claims, _configuration), Nickname = user.Nickname, Image = Convert.ToBase64String(user.Image) };
         }
 
-        private bool IsPasswordCorrect(string inputPassword, string userPassword)
+        private void PrepareFaveRecipeList(string email)
         {
-            return inputPassword.Equals(CryptHelper.Decrypt(userPassword));
-        }
-
-        private string GenerateToken(Claim[] claims)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiry = DateTime.Now.AddDays(Convert.ToInt32(_configuration["JwtExpiryInDays"]));
-
-            var token = new JwtSecurityToken(
-                _configuration["JwtIssuer"],
-                _configuration["JwtAudience"],
-                claims,
-                expires: expiry,
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var recipeList = new RecipeList();
+            recipeList.Title = "Fave";
+            recipeList.UserId = usersRepository.GetRecordByEmail(email).Id;
+            recipeListsRepository.AddRecord(recipeList);
         }
     }
 }

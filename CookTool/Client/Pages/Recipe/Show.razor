@@ -1,4 +1,5 @@
 ﻿@page "/recipe/{id}"
+@using CookTool.Client.Shared.Helpers
 
 @if (recipe == null)
 {
@@ -31,7 +32,7 @@ else
                                 <tr>
                                     <td><input type="checkbox" /></td>
                                     <td> @ingredient.Name </td>
-                                    <td> @RenderIngredientQuantity(ingredient.Quantity) </td>
+                                    <td> @RecipeHelper.RenderIngredientQuantity(ingredient.Quantity) </td>
                                     <td> @ingredientType.Key </td>
                                 </tr>
                             }
@@ -46,7 +47,7 @@ else
                 <br />
             </div>
             <div class="col">
-                <img src=@ImageStringRenderer.RenderImageString(recipe.Image, "images/default_recipe.png") alt="No image for this recipe" style="width: 100%;" />
+                <img src=@ImageHelper.RenderImageString(recipe.Image, "images/default_recipe.png") alt="No image for this recipe" style="width: 100%;" />
                 <br /><br />
                 <div class="form-group">
                     <label> Preparation time: </label>
@@ -92,7 +93,7 @@ else
     [Parameter]
     public string Id { get; set; }
     [Inject]
-    public IHttpClientRepository Client { get; set; }
+    public AbstractHttpClientRepository Client { get; set; }
 
     private Modal ChangeIngredientAmountModal { get; set; }
     private int TempPortionSize { get; set; }
@@ -117,14 +118,5 @@ else
         }
         recipe.PortionSize = TempPortionSize;
         ChangeIngredientAmountModal.Close();
-    }
-
-    private string RenderIngredientQuantity(double quantity)
-    {
-        if (quantity > 0)
-        {
-            return quantity.ToString();
-        }
-        return "Any quantity";
     }
 }

@@ -1,10 +1,12 @@
 ﻿@page "/myrecipes"
 @using Microsoft.AspNetCore.Components.Authorization
-@inject IJSRuntime js
+@using CookTool.Client.Shared.Helpers
+@inject IJSRuntime JsRuntime
 
 <AuthorizeView>
     <Authorized>
         <h3> My Recipes </h3>
+        <hr />
 
         <div class="form-group">
             <a class="btn btn-success" href="recipe/create"><i class="oi oi-plus"></i> Add New Recipe</a>
@@ -15,15 +17,16 @@
         {
             <text>Loading...</text>
         }
-        else if (recipes.Length == 0)
+        else if (recipes.Count() == 0)
         {
-            <text>No Records Found.</text>
+            <text>No Recipes Found.</text>
         }
         else
         {
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>Photo</th>
                         <th>Title</th>
                         <th>Public</th>
                         <th>Show</th>
@@ -35,8 +38,13 @@
                     @foreach (CookTool.Shared.Models.Recipe recipe in recipes)
                     {
                         <tr>
+                            <td>
+                                <div class="rounded-circle" style=@ImageHelper.ImageStyle>
+                                    <img src=@ImageHelper.RenderImageString(recipe.Image, "images/default_recipe.png") alt="No image for this user" style="height: 45px;" />
+                                </div>
+                            </td>
                             <td> @recipe.Title </td>
-                            <td> @IsPublic(recipe.IsPrivate); </td>
+                            <td> @RecipeHelper.IsPublic(recipe.IsPrivate) </td>
                             <td>
                                 <a class="btn btn-success" href="recipe/@recipe.Id.ToString()">Show</a>
                             </td>
@@ -44,7 +52,7 @@
                                 <a class="btn btn-warning" href="recipe/edit/@recipe.Id.ToString()">Edit</a>
                             </td>
                             <td>
-                                <button class="btn btn-danger" @onclick="@(() => Delete(recipe.Id))">Delete</button>
+                                <button class="btn btn-danger" @onclick="@(() => Delete(recipe))">Delete</button>
                             </td>
                         </tr>
                     }
@@ -59,26 +67,22 @@
 
 @code {
     [Inject]
-    public IHttpClientRepository Client { get; set; }
+    public AbstractHttpClientRepository Client { get; set; }
 
-    CookTool.Shared.Models.Recipe[] recipes { get; set; }
+    List<CookTool.Shared.Models.Recipe> recipes { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        //recipes = await Client.GetUserRecipes();
+        recipes = await Client.GetUserRecipes();
     }
-    async Task Delete(int recipeId)
+    async Task Delete(CookTool.Shared.Models.Recipe recipe)
     {
-        var recipe = recipes.First(x => x.Id == recipeId);
-        if (await js.InvokeAsync<bool>("confirm", $"Do you want to delete {recipe.Title} ({recipe.Id}) Record?"))
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {recipe.Title} recipe?");
+        if (confirmed)
         {
-            //await Client.DeleteUSerRecipe();
+            await Client.DeleteUserRecipe(recipe.Id);
             await OnInitializedAsync();
         }
-    }
-
-    String IsPublic(bool isPrivate)
-    {
-        return isPrivate ? "No" : "Yes";
     }
 }
 

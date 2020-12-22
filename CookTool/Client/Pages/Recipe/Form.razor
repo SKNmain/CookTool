@@ -1,101 +1,196 @@
-﻿@*<EditForm Model="@recipe" OnValidSubmit="@OnValidSubmit">
-    <DataAnnotationsValidator />
-    <div class="form-group ">
-            <div>
-                <label>Upload image :</label>
-                <div class="custom-file">
-                    <input class="custom-file-input" type="file" @bind="@recipe.Image" />
-                    <ValidationMessage For="@(() => recipe.Image)" />
-                </div>
-            </div>
-        </div>
-    <div class="form-row">
-        <div class="form-group">
-            <label>Title :</label>
-            <div>
-                <InputText @bind-Value="@recipe.Title" />
-                <ValidationMessage For="@(() => recipe.Title)" />
-            </div>
-        </div>
-        <div class="form-group ">
-            <div>
-                <label>Portion Size :</label>
-                <div>
-                    <InputNumber @bind-Value="@recipe.PortionSize" />
-                    <ValidationMessage For="@(() => recipe.PortionSize)" />
-                </div>
-            </div>
-        </div>
-        <div class="form-group ">
-            <div>
-                <label>Preparation Time:</label>
-                "form-control" type="time"
-                <div>
+﻿@using CookTool.Client.Shared.Helpers
+@using CookTool.Client.Shared.Models.SelectedItems
 
-                    <input class="form-control" type="time" @bind="@recipe.PreparationTime" />
-                    <ValidationMessage For="@(() => recipe.PreparationTime)" />
-                </div>
-            </div>
-        </div>
-        <div class="form-group ">
-            <div>
-                <label>Private :</label>
-                <div>
-                    <InputCheckbox @bind-Value="@recipe.IsPrivate" />
-                    <ValidationMessage For="@(() => recipe.IsPrivate)" />
-                </div>
-            </div>
+<div class="form-group">
+    <div class="form-row">
+        <label>Upload image: </label>
+        <InputFile OnChange="@((files) => ImageHelper.ReadImage(files, file, recipe))" />
+        @if (file != null)
+        {
+            <strong>File Selected: </strong> @file.Name
+        }
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-6">
+        <label>Title:</label>
+        <input type="text" class="form-control" @bind-value="@recipe.Title" />
+    </div>
+    <div class="form-group col-md-2">
+        <div>
+            <label>Portion Size :</label>
+            <input type="number" class="form-control" min="1" @bind-value="@recipe.PortionSize" />
         </div>
     </div>
-    <div class="form-row">
-        <div class="form-group ">
-            <div>
-                <label>Ingredients :</label>
-                <div>
-                     todo: upload fields for ingredients
-                    <InputText @bind-Value="@recipe.Title" />
-                    <ValidationMessage For="@(() => recipe.Ingredients)" />
-                </div>
-            </div>
-        </div>
-        <div class="form-group ">
-            <div>
-                <label>Categories :</label>
-                <div>
-                     todo: upload checkboxes for categories
-                    <InputNumber @bind-Value="@recipe.Categories" />
-                    <ValidationMessage For="@(() => recipe.Categories)" />
-                </div>
-            </div>
+    <div class="form-group col-md-2">
+        <div>
+            <label>Preparation Time:</label>
+            <input class="form-control" type="time" @bind="@recipe.PreparationTime" />
         </div>
     </div>
+    <div class="form-group">
+        <div>
+            <label>Private :</label>
+            <input type="checkbox" class="form-control" @bind-value="recipe.IsPrivate" />
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div>
+        <label>Categories :</label>
+        <div class="form-row flex-row">
+            @if (categories == null)
+            {
+                <div class="spinner-border-sm" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <div id="checkboxes">
+                        @foreach (var category in categories)
+                        {
+                            <label>
+                                <span class="bagde badge-pill badge-warning">
+                                    <input type="checkbox" id="@category.Id" @bind="@category.IsSelected" />@category.Name
+                                </span>
+                            </label>
+                        }
+                    </div>
+                </div>
+            }
 
-    <div class="form-row">
-        <div class="form-group ">
+        </div>
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group col-md-6">
+        <div class="form-row">
             <div>
                 <label>Preparation :</label>
-                <div>
-                    <InputTextArea @bind-Value="@recipe.Preparation" />
-                    <ValidationMessage For="@(() => recipe.Preparation)" />
-                </div>
+                <textarea class="form-control" rows="8" cols="100" @bind="@recipe.Preparation"></textarea>
             </div>
         </div>
-        <div class="form-group ">
+        <br />
+        <div class="form-row">
             <div>
                 <label>Notes :</label>
-                <div>
-                    <InputTextArea @bind-Value="@recipe.Notes" />
-                    <ValidationMessage For="@(() => recipe.Notes)" />
-                </div>
+                <textarea class="form-control" rows="5" cols="100" @bind="@recipe.Notes"></textarea>
             </div>
         </div>
     </div>
-    <button type="submit" class="btn btn-success">
+    <div class="form-group col-md-6">
+        <label>Ingredients :</label>
+        <br />
+        @if (ingredients == null && units == null && newIngredient == null)
+        {
+            <div class="spinner-border-sm" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        }
+        else
+        {
+            if (ingredients.Count > 0)
+            {
+                foreach (var ingredient in ingredients)
+                {
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label>Name:</label>
+                            <input type="text" class="form-control" @bind-value="@ingredient.Name" />
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Quantity:</label>
+                            <input type="number" class="form-control" @bind-value="@ingredient.Quantity" />
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Measurement unit:</label>
+                            @if (units == null)
+                            {
+                                <div class="spinner-border-sm" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <select id="units" @bind="@ingredient.MeasurementUnitId">
+                                    @foreach (var unit in units)
+                                    {
+                                        <option value="@unit.Id">@unit.Name</option>
+                                    }
+                                </select>
+                            }
+
+                        </div>
+                        <div class="form-group col-md-1">
+                            <button class="btn btn-danger" @onclick="() => DeleteIngredient(ingredient)"><span class="oi oi-trash" aria-hidden="true"></span></button>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No ingredients to show!</p>
+            }
+            <br />
+            <button class="btn btn-primary" @onclick="() => AddIngredientModal.Open()">+</button>
+
+            <Modal @ref="AddIngredientModal">
+                <Title>Add new ingredient!</Title>
+                <Body>
+                    <CookTool.Client.Pages.Ingredient.IngredientForm units="units" item="item"/>
+                </Body>
+                <Footer>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => AddIngredient()">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => AddIngredientModal.Close()">Close</button>
+                </Footer>
+            </Modal>
+
+        }
+
+    </div>
+</div>
+<div class="form-row">
+    <button type="submit" class="btn btn-success" @onclick="OnValidSubmit">
         @ButtonText
     </button>
-</EditForm>
+</div>
+
 @code {
     [Parameter] public CookTool.Shared.Models.Recipe recipe { get; set; }
     [Parameter] public string ButtonText { get; set; } = "Save";
     [Parameter] public EventCallback OnValidSubmit { get; set; }
-}*@
+    [Parameter] public List<CategorySelect> categories { get; set; }
+    [Parameter] public List<CookTool.Shared.Models.Ingredient> ingredients { get; set; }
+    [Parameter] public List<CookTool.Shared.Models.MeasurementUnit> units { get; set; }
+    private IFileListEntry file;
+
+    private CookTool.Client.Shared.Models.IngredientItem item = new CookTool.Client.Shared.Models.IngredientItem();
+    private CookTool.Shared.Models.Ingredient newIngredient = new CookTool.Shared.Models.Ingredient();
+    private Modal AddIngredientModal { get; set; }
+
+    private void DeleteIngredient(CookTool.Shared.Models.Ingredient ing)
+    {
+        ingredients.Remove(ing);
+        this.StateHasChanged();
+    }
+
+    private async Task AddIngredient()
+    {
+        PrepareNewIngredient();
+        ingredients.Add(newIngredient);
+        newIngredient = new CookTool.Shared.Models.Ingredient();
+        this.AddIngredientModal.Close();
+        this.StateHasChanged();
+    }
+
+    private void PrepareNewIngredient()
+    {
+        newIngredient.Name = item.Name;
+        newIngredient.Quantity = item.Quantity;
+        newIngredient.MeasurementUnitId = item.MeasurementUnitId;
+        item = new CookTool.Client.Shared.Models.IngredientItem();
+    }
+}

@@ -13,5 +13,6 @@ namespace CookTool.Shared.Models
         public string Name { get; set; }
         public double Quantity { get; set; }
         public int MeasurementUnitId { get; set; }
+        public int RecipeId { get; set; }
     }
 }

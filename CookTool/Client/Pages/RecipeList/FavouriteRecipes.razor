@@ -1,5 +1,19 @@
-﻿<h3>FavouriteRecipes</h3>
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+@page "/myfavrecipes"
+
+<AuthorizeView>
+    <Authorized>
+        <ShowModel Title="Fave" />
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+
 
 @code {
-
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
 }
