@@ -1,0 +1,109 @@
+﻿@page "/measurement"
+@using CookTool.Client.Shared.Models;
+@using CookTool.Client.Shared.Helpers;
+
+<h3>Change unit to ingredient</h3>
+<hr />
+
+<div class="form-group row">
+    <label class="col-md-1 col-form-label">Name:</label>
+    @if (basicItems == null)
+    {
+        <div class="spinner-border-sm" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    }
+    else
+    {
+        <select id="basicItems" @onchange="@((ChangeEventArgs e) => item.Name = e.Value.ToString())">
+            @foreach (var bi in basicItems)
+            {
+                <option value="@bi.Name">@bi.Name</option>
+            }
+        </select>
+    }
+</div>
+<div class="form-group row">
+    <label class="col-md-1 col-form-label">Quantity:</label>
+    <div class="col-md-4">
+        <input class="form-control" type="number" @onchange="@((ChangeEventArgs e) => item.Quantity = Double.Parse(e.Value.ToString()))">
+    </div>
+</div>
+<div class="form-group row">
+    <label class="col-md-1 col-form-label">Units:</label>&nbsp;&nbsp;&nbsp;&nbsp;
+    @if (units == null)
+    {
+        <div class="spinner-border-sm" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    }
+    else
+    {
+        <select id="units" @onchange="@((ChangeEventArgs e) => item.MeasurementUnitId = Int32.Parse(e.Value.ToString()))">
+            @foreach (var unit in units)
+            {
+                <option value="@unit.Id">@unit.Name</option>
+            }
+        </select>
+    }
+</div>
+<button type="button" class="btn btn-warning" @onclick="ShowResult">Change</button>
+
+<hr />
+@if (resultItems != null)
+{
+    <div class="badge badge-warning text-wrap" style="width: 20rem; font-size: 1rem;">
+        Results for item: @item.Name
+    </div>
+    <br />
+    <br />
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Quantity</th>
+                <th>Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var result in resultItems)
+            {
+                <tr>
+                    <td>@result.Value.Quantity</td>
+                    <td>@result.Key</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <text>No Ingredients Found.</text>
+}
+
+@code {
+    [Inject]
+    public AbstractHttpClientRepository Client { get; set; }
+    private List<CookTool.Shared.Models.MeasurementUnit> units;
+    private CookTool.Client.Shared.Models.IngredientItem item;
+    private List<CookTool.Client.Shared.Models.IngredientItem> basicItems;
+    private Dictionary<string, CookTool.Client.Shared.Models.IngredientItem> resultItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = new CookTool.Client.Shared.Models.IngredientItem();
+        basicItems = IngredientsHelper.BasicItems;
+        units = MeasurementHelper.PrepareUnits();
+    }
+
+    private async Task ShowResult()
+    {
+        resultItems = PrepareResultItems();
+        this.StateHasChanged();
+    }
+
+    private Dictionary<string, CookTool.Client.Shared.Models.IngredientItem> PrepareResultItems()
+    {
+        var resultItem = basicItems.Find(bi => bi.Name.Equals(item.Name));
+        return MeasurementHelper.ConvertUnit(item, resultItem);
+    }
+}

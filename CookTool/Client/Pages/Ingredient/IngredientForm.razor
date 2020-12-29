@@ -9,7 +9,7 @@
 <div class="form-group row">
     <label class="col-md-1 col-form-label">Quantity:</label>
     <div class="col-md-4">
-        <input class="form-control" type="number" @onchange="@((ChangeEventArgs e) => item.Quantity = Int32.Parse(e.Value.ToString()))">
+        <input class="form-control" type="number" @onchange="@((ChangeEventArgs e) => item.Quantity = Double.Parse(e.Value.ToString()))">
     </div>
 </div>
 <div class="form-group row">
