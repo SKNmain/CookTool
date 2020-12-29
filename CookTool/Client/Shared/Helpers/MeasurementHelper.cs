@@ -61,7 +61,7 @@ namespace CookTool.Client.Shared.Helpers
         {
             Dictionary<string, Models.IngredientItem> items = new Dictionary<string, Models.IngredientItem>();
 
-            items.Add(G, new Models.IngredientItem(basicItem.Name, currentItem.Quantity * basicItem.Quantity / basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio));
+            items.Add(G, new Models.IngredientItem(basicItem.Name, currentItem.Quantity / basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio));
             items.Add(S, new Models.IngredientItem(basicItem.Name, currentItem.Quantity / SPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
             items.Add(TS, new Models.IngredientItem(basicItem.Name, currentItem.Quantity / TEASPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
             items.Add(GL, new Models.IngredientItem(basicItem.Name, currentItem.Quantity / GLASS_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
@@ -73,7 +73,7 @@ namespace CookTool.Client.Shared.Helpers
         {
             Dictionary<string, Models.IngredientItem> items = new Dictionary<string, Models.IngredientItem>();
 
-            var ml = new Models.IngredientItem(basicItem.Name, currentItem.Quantity / basicItem.Quantity * basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio);
+            var ml = new Models.IngredientItem(basicItem.Name, currentItem.Quantity * basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio);
             items.Add(ML, ml);
             items.Add(S, new Models.IngredientItem(basicItem.Name, ml.Quantity / SPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
             items.Add(TS, new Models.IngredientItem(basicItem.Name, ml.Quantity / TEASPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
@@ -88,7 +88,7 @@ namespace CookTool.Client.Shared.Helpers
 
             Models.IngredientItem ml = new Models.IngredientItem(basicItem.Name, currentItem.Quantity * SPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio);
             items.Add(ML, ml);
-            items.Add(G, new Models.IngredientItem(basicItem.Name, ml.Quantity * basicItem.Quantity / basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio));
+            items.Add(G, new Models.IngredientItem(basicItem.Name, ml.Quantity / basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio));
             items.Add(TS, new Models.IngredientItem(basicItem.Name, ml.Quantity / TEASPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
             items.Add(GL, new Models.IngredientItem(basicItem.Name, ml.Quantity / GLASS_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
 
@@ -102,7 +102,7 @@ namespace CookTool.Client.Shared.Helpers
             Models.IngredientItem ml = new Models.IngredientItem(basicItem.Name, currentItem.Quantity * TEASPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio);
             items.Add(ML, ml);
             items.Add(S, new Models.IngredientItem(basicItem.Name, ml.Quantity / SPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
-            items.Add(G, new Models.IngredientItem(basicItem.Name, ml.Quantity * basicItem.Quantity / basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio));
+            items.Add(G, new Models.IngredientItem(basicItem.Name, ml.Quantity / basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio));
             items.Add(GL, new Models.IngredientItem(basicItem.Name, ml.Quantity / GLASS_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
 
             return items;
@@ -116,7 +116,7 @@ namespace CookTool.Client.Shared.Helpers
             items.Add(ML, ml);
             items.Add(S, new Models.IngredientItem(basicItem.Name, ml.Quantity / SPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
             items.Add(TS, new Models.IngredientItem(basicItem.Name, ml.Quantity / TEASPOON_MAX, basicItem.MeasurementUnitId, basicItem.GMLRatio));
-            items.Add(G, new Models.IngredientItem(basicItem.Name, ml.Quantity * basicItem.Quantity / basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio));
+            items.Add(G, new Models.IngredientItem(basicItem.Name, ml.Quantity / basicItem.GMLRatio, basicItem.MeasurementUnitId, basicItem.GMLRatio));
 
             return items;
         }
