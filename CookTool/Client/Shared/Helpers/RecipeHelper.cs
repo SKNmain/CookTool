@@ -39,5 +39,10 @@ namespace CookTool.Client.Shared.Helpers
             }
             return "Any quantity";
         }
+
+        public static string GetRecipeTitle(List<Recipe> recipes, int id)
+        {
+            return recipes.Find(recipe => recipe.Id == id).Title;
+        }
     }
 }

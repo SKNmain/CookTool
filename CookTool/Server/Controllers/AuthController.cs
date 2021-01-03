@@ -19,6 +19,7 @@ namespace CookTool.Server.Controllers
         private readonly IConfiguration _configuration;
         private readonly UsersRepository usersRepository = new UsersRepository();
         private readonly RecipeListsRepository recipeListsRepository = new RecipeListsRepository();
+        private readonly WeekMenusRepository weekMenuRepository = new WeekMenusRepository();
 
         public AuthController(IConfiguration configuration)
         {
@@ -32,7 +33,9 @@ namespace CookTool.Server.Controllers
         
             try{ 
                 usersRepository.AddRecord(newUser);
-                PrepareFaveRecipeList(newUser.Email);
+                var id = usersRepository.GetRecordByEmail(newUser.Email).Id;
+                PrepareFaveRecipeList(id);
+                PrepareWeekMenu(id);
             }
             catch(Exception e)
             {
@@ -56,12 +59,20 @@ namespace CookTool.Server.Controllers
             return new LoginResult { Successful = true, Token = AuthHelper.GenerateToken(claims, _configuration), Nickname = user.Nickname, Image = Convert.ToBase64String(user.Image) };
         }
 
-        private void PrepareFaveRecipeList(string email)
+        private void PrepareFaveRecipeList(int userid)
         {
             var recipeList = new RecipeList();
             recipeList.Title = "Fave";
-            recipeList.UserId = usersRepository.GetRecordByEmail(email).Id;
+            recipeList.UserId = userid;
             recipeListsRepository.AddRecord(recipeList);
+        }
+
+        private void PrepareWeekMenu(int userid)
+        {
+            var weekMenu = new WeekMenu();
+            weekMenu.UserId = userid;
+            weekMenu.WeekMenuData = WeekMenuHelper.PrepareWeekMenuData();
+            weekMenuRepository.AddRecord(weekMenu);
         }
     }
 }

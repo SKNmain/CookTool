@@ -244,6 +244,21 @@ namespace CookTool.Client
             await _client.PostAsJsonAsync("ingredients", ui);
         }
 
+        // --- WEEK MENU --- //
+
+        public async Task<WeekMenu> GetUserWeekMenu()
+        {
+            var currentUser = await GetCurrentUser();
+            var weekMenuData = await _client.GetAsync($"weekmenus/{currentUser.Id}");
+            var weekMenu = await weekMenuData.Content.ReadFromJsonAsync<WeekMenu>();
+            return weekMenu;
+        }
+
+        public async Task UpdateWeekMenu(WeekMenu weekMenu)
+        {
+            await _client.PutAsJsonAsync($"weekmenus/{weekMenu.Id}", weekMenu);
+        }
+
         // --- USER --- //
 
         public async Task<User> GetUser(string id)

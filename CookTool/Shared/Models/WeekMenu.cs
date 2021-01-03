@@ -12,7 +12,7 @@ namespace CookTool.Shared.Models
     public class WeekMenu
     {
         public int Id { get; set; }
-        public JObject WeekMenuData { get; set; }
+        public string WeekMenuData { get; set; }
         public int UserId { get; set; }
     }
 }
