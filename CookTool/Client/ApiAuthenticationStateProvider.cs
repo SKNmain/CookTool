@@ -38,7 +38,7 @@ namespace CookTool.Client
 
         public void MarkUserAsAuthenticated(string email, string nickname, string image)
         {
-            var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, email), new Claim(ClaimTypes.Name, nickname), new Claim(ClaimTypes.Surname, image) }, "apiauth"));
+            var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Email, email), new Claim(ClaimTypes.Name, nickname), new Claim(ClaimTypes.Surname, String.IsNullOrEmpty(image) ? "" : image) }, "apiauth"));
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
             NotifyAuthenticationStateChanged(authState);
         }

@@ -6,8 +6,7 @@
     <Authorized>
         <h3> Create new tip</h3>
         <hr />
-        <Form ButtonText="Create" tip="@tip"
-              OnValidSubmit="@(() => CreateTip())" />
+        <Form tip="@tip" OnValidSubmit="@(() => CreateTip())" />
 
     </Authorized>
     <NotAuthorized>

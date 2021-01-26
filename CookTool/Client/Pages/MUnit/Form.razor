@@ -5,49 +5,64 @@
 <h3>Convert ingredient to other units</h3>
 <hr />
 
-<div class="form-group row">
-    <label class="col-md-1 col-form-label">Name:</label>
-    @if (basicItems == null)
-    {
-        <div class="spinner-border-sm" role="status">
-            <span class="sr-only">Loading...</span>
+<div class="container-fluid">
+    <div class="row p-1">
+        <div class="col-lg-1 col-md-2 col-sm-3">
+            <label> Name: </label>
         </div>
-    }
-    else
-    {
-        <select id="basicItems" @onchange="@((ChangeEventArgs e) => item.Name = e.Value.ToString())">
-            @foreach (var bi in basicItems)
+        <div class="col">
+            @if (basicItems == null)
             {
-                <option value="@bi.Name">@bi.Name</option>
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
             }
-        </select>
-    }
-</div>
-<div class="form-group row">
-    <label class="col-md-1 col-form-label">Quantity:</label>
-    <div class="col-md-4">
-        <input class="form-control" type="number" @onchange="@((ChangeEventArgs e) => item.Quantity = Double.Parse(e.Value.ToString()))">
+            else
+            {
+                <select class="form-control" id="basicItems" @onchange="@((ChangeEventArgs e) => item.Name = e.Value.ToString())">
+                    @foreach (var bi in basicItems)
+                    {
+                        <option value="@bi.Name">@bi.Name</option>
+                    }
+                </select>
+            }
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-lg-1 col-md-2 col-sm-3">
+            <label> Quantity: </label>
+        </div>
+        <div class="col">
+            <input class="form-control" type="number" min="1" placeholder="1" @onchange="@((ChangeEventArgs e) => item.Quantity = Double.Parse(e.Value.ToString()))">
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-lg-1 col-md-2 col-sm-3">
+            <label> Units: </label>
+        </div>
+        <div class="col">
+            @if (units == null)
+            {
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            }
+            else
+            {
+                <select class="form-control" id="units" @onchange="@((ChangeEventArgs e) => item.MeasurementUnitId = Int32.Parse(e.Value.ToString()))">
+                    @foreach (var unit in units)
+                    {
+                        <option value="@unit.Id">@unit.Name</option>
+                    }
+                </select>
+            }
+        </div>
+    </div>
+    <div class="row p-1">
+        <button type="button" class="btn btn-outline-warning" @onclick="ShowResult"><span class="oi oi-check" aria-hidden="true"></span></button>
     </div>
 </div>
-<div class="form-group row">
-    <label class="col-md-1 col-form-label">Units:</label>&nbsp;&nbsp;&nbsp;&nbsp;
-    @if (units == null)
-    {
-        <div class="spinner-border-sm" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-    }
-    else
-    {
-        <select id="units" @onchange="@((ChangeEventArgs e) => item.MeasurementUnitId = Int32.Parse(e.Value.ToString()))">
-            @foreach (var unit in units)
-            {
-                <option value="@unit.Id">@unit.Name</option>
-            }
-        </select>
-    }
-</div>
-<button type="button" class="btn btn-warning" @onclick="ShowResult">Change</button>
+
 
 <hr />
 @if (resultItems != null)
@@ -90,9 +105,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        item = new CookTool.Client.Shared.Models.IngredientItem();
         basicItems = IngredientsHelper.BasicItems;
         units = MeasurementHelper.PrepareUnits();
+        item = new CookTool.Client.Shared.Models.IngredientItem() { Name = basicItems.First().Name, MeasurementUnitId = units.First().Id, Quantity = 1 };
     }
 
     private async Task ShowResult()

@@ -4,7 +4,7 @@
 
 @if (recipes == null && tips == null)
 {
-    <div class="spinner-border-sm" role="status">
+    <div class="spinner-border" role="status">
         <span class="sr-only">Loading...</span>
     </div>
 }
@@ -13,21 +13,25 @@ else
 
     <div class="container-fluid">
         <div class="row">
-            <div class="form-group">
-                <div class="row m-lg-2">
-                    <div class="form-inline col-lg-12">
-                        <input class="form-control col-lg-8" type="text" @bind-value="@Key" style="width: 900px;" placeholder="recipe names, ingredients, key words...">
-                        <button class="btn btn-warning" @onclick="Search">Search</button>
+            <div class="col">
+                <div class="row">
+                    <div class="col-lg-10 col-md-7 col-sm-4">
+                        <input class="form-control" type="text" @bind-value="@Key" placeholder="recipe names, ingredients, key words..." />
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-warning" @onclick="Search"><span class="oi oi-check" aria-hidden="true"></span></button>
                     </div>
                 </div>
-                <div class="row m-lg-2">
+                <div class="row m-2">
                     <div id="checkboxes">
                         @foreach (var filter in filters)
                         {
                             <label>
-                                <span class="bagde badge-pill badge-warning">
-                                    <input type="checkbox" @bind="@filter.IsSelected" />@filter.Name
-                                </span>
+                                <h5>
+                                    <span class="bagde badge-pill badge-warning m-1">
+                                        <input type="checkbox" @bind="@filter.IsSelected" /> @filter.Name
+                                    </span>
+                                </h5>
                             </label>
                         }
                     </div>
@@ -41,14 +45,14 @@ else
                 @if (recipes.Count > 0)
                 {
                     <div class="row">
-                        <div class="card-columns" style="column-count: 2">
+                        <div class="card-columns" style="column-count: 2;">
                             @foreach (var recipe in recipes)
                             {
                                 <div class="card" style="width: 90%;">
                                     <img class="card-img-top" src=@ImageHelper.RenderImageString(recipe.Image, "images/default_recipe.png") alt="No image for this recipe!" style="margin: 0 auto;" />
                                     <div class="card-body">
                                         <h4 class="card-title">@recipe.Title</h4>
-                                        <a href="recipe/@recipe.Id.ToString()" class="btn btn-dark">View more</a>
+                                        <a href="recipe/@recipe.Id.ToString()" class="btn btn-outline-warning"><span class="oi oi-eye" aria-hidden="true"></span></a>
                                     </div>
                                 </div>
                             }
@@ -71,7 +75,7 @@ else
                             <img class="card-img-top" src=@ImageHelper.RenderImageString(tip.Image, "images/default_tip.png") alt="No image for this tip!" style="margin: 0 auto;" />
                             <div class="card-body">
                                 <h4 class="card-title">@tip.Title</h4>
-                                <a href="tip/@tip.Id.ToString()" class="btn btn-dark">View more</a>
+                                <a href="tip/@tip.Id.ToString()" class="btn btn-outline-warning"><span class="oi oi-eye" aria-hidden="true"></span></a>
                             </div>
                         </div>
                     }

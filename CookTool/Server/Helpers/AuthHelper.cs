@@ -1,8 +1,12 @@
-﻿using CookTool.Shared.Models;
+﻿using CookTool.Server.Repositories;
+using CookTool.Shared.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -13,6 +17,8 @@ namespace CookTool.Server.Helpers
 {
     public class AuthHelper
     {
+        private static BlackListedTokensRepository repository = new BlackListedTokensRepository();
+
         public static bool IsPasswordCorrect(string inputPassword, string userPassword)
         {
             return inputPassword.Equals(CryptHelper.Decrypt(userPassword));
@@ -33,6 +39,19 @@ namespace CookTool.Server.Helpers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public static void CheckTokenBlackListed(HttpRequest request)
+        {
+            var token = ExtractToken(request);
+            if(!String.IsNullOrEmpty(token)) if (repository.GetAllRecords().Any(t => t.Token.Equals(token))) throw new SecurityTokenInvalidLifetimeException();
+        }
+
+        private static string ExtractToken(HttpRequest request)
+        {
+            StringValues value;
+            request.Headers.TryGetValue("Authorization", out value);
+            return value.ToArray().GetValue(0).ToString().Split(' ').GetValue(1).ToString();
         }
     }
 }

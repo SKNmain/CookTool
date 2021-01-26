@@ -5,7 +5,7 @@
 
 @if (recipeList == null && recipes == null && recipesSelected == null)
 {
-    <div class="spinner-border-sm" role="status">
+    <div class="spinner-border" role="status">
         <span class="sr-only">Loading...</span>
     </div>
 }
@@ -15,7 +15,7 @@ else
     <hr />
 
     <div class="form-group">
-        <a class="btn btn-success" @onclick="AddSelectedRecipes"><i class="oi oi-plus"></i> Add selected recipes to list</a>
+        <a class="btn btn-warning" @onclick="AddSelectedRecipes"><span class="oi oi-plus" aria-hidden="true"></span></a>
     </div>
 
     @if (recipesSelected.Count > 0)
@@ -25,7 +25,7 @@ else
                 <tr>
                     <th>Selected</th>
                     <th>Title</th>
-                    <th>Show</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -46,7 +46,7 @@ else
                             @recipe.Title
                         </td>
                         <td>
-                            <a class="btn btn-success" href="recipe/@recipe.Id.ToString()">Show</a>
+                            <a class="btn btn-warning" href="recipe/@recipe.Id.ToString()"><span class="oi oi-eye" aria-hidden="true"></span></a>
                         </td>
                     </tr>
                 }
@@ -75,7 +75,7 @@ else
     {
         recipeList = await Client.GetUserRecipeList(Title);
         recipeListRecipes = await Client.GetRecipeListRecipes(recipeList.Id);
-        recipes = await Client.GetRecipes();
+        recipes = await Client.GetPublicAndUserRecipes();
         recipesSelected = new List<RecipeSelect>();
 
         recipes.ForEach(recipe =>

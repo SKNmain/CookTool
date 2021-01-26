@@ -9,7 +9,7 @@
 
         @if (Recipes == null)
         {
-            <div class="spinner-border-sm" role="status">
+            <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         }
@@ -20,7 +20,7 @@
                     <tr>
                         <th>Photo</th>
                         <th>Title</th>
-                        <th>Show</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,7 +34,7 @@
                             </td>
                             <td> @recipe.Title </td>
                             <td>
-                                <a class="btn btn-success" href="recipe/@recipe.Id.ToString()">Show</a>
+                                <a class="btn btn-warning" href="recipe/@recipe.Id.ToString()"><span class="oi oi-eye" aria-hidden="true"></span></a>
                             </td>
                         </tr>
                     }

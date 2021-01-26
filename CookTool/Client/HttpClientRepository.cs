@@ -29,11 +29,10 @@ namespace CookTool.Client
 
         public override async Task<LoginResult> Login(LoginModel loginModel)
         {
-         
             var response = await _client.PostAsJsonAsync("auth/login", loginModel);
             var loginResult = await response.Content.ReadFromJsonAsync<LoginResult>();
 
-            if (!response.IsSuccessStatusCode)
+            if (!loginResult.Successful)
             {
                 return loginResult;
             }
@@ -48,6 +47,9 @@ namespace CookTool.Client
 
         public override async Task Logout()
         {
+            var item = await _localStorage.GetItemAsync<string>("authToken");
+            BlackListedToken token = new BlackListedToken() { Token = item };
+            await _client.PostAsJsonAsync("auth/logout", token);
             await _localStorage.RemoveItemAsync("authToken");
             ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsLoggedOut();
             _client.DefaultRequestHeaders.Authorization = null;
@@ -65,8 +67,6 @@ namespace CookTool.Client
 
         public override async Task<User> GetCurrentUser()
         {
-            if (_currentUser != null) return _currentUser;
-
             var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
 
             var userAuth = authState.User;

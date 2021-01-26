@@ -1,5 +1,6 @@
 ﻿@page "/mykitcheningredients"
 @using Microsoft.AspNetCore.Components.Authorization
+@using CookTool.Client.Shared.Helpers
 @inject IJSRuntime JsRuntime
 
 <AuthorizeView>
@@ -7,24 +8,45 @@
         <h3>My Kitchen Ingredients</h3>
         <hr />
 
-        <div class="form-group">
-            <button class="btn btn-warning" @onclick="() => AddIngredientModal.Open()">Add new ingredient</button>
+        <div class="form-inline">
+            <button class="btn btn-outline-warning" @onclick="() => AddIngredientModal.Open()"><span class="oi oi-plus" aria-hidden="true"></span></button>
+            <button class="btn btn-outline-warning" style="margin-left: 5px;" @onclick="() => AddIngredientByBarcodeModal.Open()"><BarcodeIcon /></button>
         </div>
         <Modal @ref="AddIngredientModal">
             <Title>Add new ingredient placed in your kitchen!</Title>
             <Body>
-                <IngredientForm units="@units" item="@item"/>
+                <IngredientForm units="@units" item="@item" />
             </Body>
             <Footer>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="AddIngredient">Add</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="AddIngredientModal.Close">Close</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal" @onclick="AddIngredient"><span class="oi oi-check" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="AddIngredientModal.Close"><span class="oi oi-x" aria-hidden="true"></span></button>
+            </Footer>
+        </Modal>
+
+        <Modal @ref="AddIngredientByBarcodeModal">
+            <Title>Add new ingredient placed in your kitchen by barcode!</Title>
+            <Body>
+                @if (!bsresult.Success)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <p>@bsresult.Error</p>
+                    </div>
+                }
+                <BarcodeReader GetProductByBarcode="SetItemByBarcode" />
+                <IngredientBarcodeForm units="@units" item="@barcodeItem" />
+            </Body>
+            <Footer>
+                @if(bsresult.Success){
+                <button type="button" class="btn btn-warning" data-dismiss="modal" @onclick="AddIngredientByBarcode"><span class="oi oi-check" aria-hidden="true"></span></button>
+                }
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="AddIngredientByBarcodeModal.Close"><span class="oi oi-x" aria-hidden="true"></span></button>
             </Footer>
         </Modal>
 
         <br>
         @if (userIngredients == null)
         {
-            <div class="spinner-border-sm" role="status">
+            <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         }
@@ -40,7 +62,7 @@
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Unit</th>
-                        <th>Delete</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,7 +75,7 @@
                                 <td>@ui.Quantity</td>
                                 <td>@ui_with_unit.Key</td>
                                 <td>
-                                    <button class="btn btn-danger" @onclick="@(() => Delete(ui))">Delete</button>
+                                    <button class="btn btn-danger" @onclick="@(() => Delete(ui))"><span class="oi oi-trash" aria-hidden="true"></span></button>
                                 </td>
                             </tr>
                         }
@@ -73,13 +95,20 @@
 
     private Dictionary<string, List<CookTool.Shared.Models.UserIngredient>> userIngredients;
     private List<CookTool.Shared.Models.MeasurementUnit> units;
+
     private Modal AddIngredientModal = new Modal();
+    private Modal AddIngredientByBarcodeModal = new Modal();
+    private CookTool.Client.Shared.Models.BarcodeScanResult bsresult = new CookTool.Client.Shared.Models.BarcodeScanResult();
+
     private CookTool.Client.Shared.Models.IngredientItem item;
+    private CookTool.Client.Shared.Models.IngredientItem barcodeItem;
+
 
     protected override async Task OnInitializedAsync()
     {
-        item = new CookTool.Client.Shared.Models.IngredientItem();
         units = await Client.GetMeasurementUnits();
+        item = new CookTool.Client.Shared.Models.IngredientItem() { MeasurementUnitId = units.First().Id, Quantity = 1 };
+        barcodeItem = new CookTool.Client.Shared.Models.IngredientItem();
         userIngredients = await Client.GetUserIngredients();
     }
 
@@ -96,8 +125,22 @@
     private async Task AddIngredient()
     {
         await Client.AddUserIngredient(item);
-        item = new CookTool.Client.Shared.Models.IngredientItem();
+        item = new CookTool.Client.Shared.Models.IngredientItem() { MeasurementUnitId = units.First().Id, Quantity = 1 };
         AddIngredientModal.Close();
         await OnInitializedAsync();
+    }
+
+    private async Task AddIngredientByBarcode()
+    {
+        await Client.AddUserIngredient(barcodeItem);
+        barcodeItem = new CookTool.Client.Shared.Models.IngredientItem();
+        AddIngredientByBarcodeModal.Close();
+        await OnInitializedAsync();
+    }
+
+    private async void SetItemByBarcode(string barcode)
+    {
+        await BarcodeHelper.GenereteItemByBarcode(barcode, barcodeItem, bsresult);
+        this.StateHasChanged();
     }
 }

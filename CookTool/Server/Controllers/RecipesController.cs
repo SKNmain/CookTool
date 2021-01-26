@@ -26,6 +26,14 @@ namespace CookTool.Server.Controllers
             return recipesRepository.GetBestRatingRecords();
         }
 
+        [HttpGet("{userid}/publicandmine")]
+        [Authorize]
+        public IList<Recipe> GetPublicAndUser(int userid)
+        {
+            AuthHelper.CheckTokenBlackListed(Request);
+            return recipesRepository.GetBestRatingRecords().Concat(recipesRepository.GetUserRecords(userid)).GroupBy(recipe => recipe.Id).Select(group => group.First()).ToArray();
+        }
+
         [HttpGet("{keyWord}/{filters}/filteredrecipes")]
         public IList<Recipe> GetFilteredRecipes(string keyWord, string filters)
         {
@@ -83,16 +91,18 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public IList<Recipe> GetRandomRecipes(int userid)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             var userIngredients = userIngredientsRepository.GetUserIngredients(userid).Select(ing => ing.Name).ToList();
-            var recipes = recipesRepository.GetBestRatingRecords();
+            var recipes = recipesRepository.GetBestRatingRecords().Concat(recipesRepository.GetUserRecords(userid)).GroupBy(recipe => recipe.Id).Select(group => group.First()).ToArray();
             var recipeIds = RecipeHelper.FilterRecipeIds(userIngredients, ingredientsRepository);
-            return recipes.Where(recipe => recipeIds.Contains(recipe.Id) == true).OrderBy(recipe => recipeIds.IndexOf(recipe.Id)).ToList();
+            return recipes.Where(recipe => recipeIds.Contains(recipe.Id) == true).OrderBy(recipe => recipeIds.IndexOf(recipe.Id)).Take(5).ToList();
         }
 
         [HttpGet("{userid}/recipes")]
         [Authorize]
         public IList<Recipe> GetUserRecipes(int userid)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             return recipesRepository.GetUserRecords(userid);
         }
 
@@ -100,6 +110,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public int Post([FromBody] Recipe recipe)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             recipesRepository.AddRecord(recipe);
             return recipesRepository.GetUserRecords(recipe.UserId).Where(rec => rec.Title.Equals(recipe.Title)).First().Id;
         }
@@ -108,6 +119,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void PostCategories(int id, [FromBody] List<Category> categories)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             categories.ForEach(cat => {
                 var recipeCategory = new RecipeCategory();
                 recipeCategory.RecipeId = id;
@@ -120,6 +132,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void PostIngredients(int id, [FromBody] List<Ingredient> ingredients)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             ingredients.ForEach(ing => {
                 ing.RecipeId = id;
                 ingredientsRepository.AddRecord(ing);
@@ -130,13 +143,15 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Put(int id, [FromBody] Recipe recipe)
         {
-           recipesRepository.UpdateRecord(id, recipe);
+            AuthHelper.CheckTokenBlackListed(Request);
+            recipesRepository.UpdateRecord(id, recipe);
         }
 
         [HttpPut("{id}/categories")]
         [Authorize]
         public void PutCategories(int id, [FromBody] List<Category> categories)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             var recipeCategoryIds = recipesRepository.GetRecipeCategories(id).Select(ing => ing.Id).ToList();
 
             categories.ForEach(cat =>
@@ -158,6 +173,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void PutIngredients(int id, [FromBody] List<Ingredient> ingredients)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             var recipeIngredientIds = recipesRepository.GetRecipeIngredients(id).Select(ing => ing.Id).ToList();
             ingredients.ForEach(ing =>
             {
@@ -181,6 +197,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Delete(int id)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             recipesRepository.DeleteRecord(id);
         }
     }

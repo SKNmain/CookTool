@@ -8,7 +8,7 @@
     <Authorized>
         @if (recipe == null || selectedCategories == null || ingredients == null || units == null)
         {
-            <div class="spinner-border-sm" role="status">
+            <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         }
@@ -17,7 +17,7 @@
             <h3> Update recipe </h3>
             <hr />
 
-            <Form ButtonText="Update" recipe="@recipe"
+            <Form recipe="@recipe"
                   categories="@selectedCategories"
                   ingredients="@ingredients"
                   units="@units"
@@ -53,7 +53,7 @@
 
         foreach (var cat in categories)
         {
-            selectedCategories.Add(new CategorySelect(cat.Id, cat.Name, recipeCategories.Contains(cat)));
+            selectedCategories.Add(new CategorySelect(cat.Id, cat.Name, recipeCategories.Any(category => category.Id == cat.Id)));
         }
     }
 

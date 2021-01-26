@@ -9,9 +9,9 @@
         <hr />
 
         <div class="form-group">
-            <a class="btn btn-success" href="tip/create"><i class="oi oi-plus"></i> Add New Tip</a>
+            <a class="btn btn-outline-warning" href="tip/create"><span class="oi oi-plus" aria-hidden="true"></span></a>
         </div>
-        <br>
+        <br />
 
         @if (tips == null)
         {
@@ -28,9 +28,9 @@
                     <tr>
                         <th>Photo</th>
                         <th>Title</th>
-                        <th>Show</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,13 +44,13 @@
                             </td>
                             <td> @tip.Title </td>
                             <td>
-                                <a class="btn btn-success" href="tip/@tip.Id.ToString()">Show</a>
+                                <a class="btn btn-warning" href="tip/@tip.Id.ToString()"><span class="oi oi-eye" aria-hidden="true"></span></a>
                             </td>
                             <td>
-                                <a class="btn btn-warning" href="tip/edit/@tip.Id.ToString()">Edit</a>
+                                <a class="btn btn-warning" href="tip/edit/@tip.Id.ToString()"><span class="oi oi-brush" aria-hidden="true"></span></a>
                             </td>
                             <td>
-                                <button class="btn btn-danger" @onclick="@(() => Delete(tip))">Delete</button>
+                                <button class="btn btn-danger" @onclick="@(() => Delete(tip))"><span class="oi oi-trash" aria-hidden="true"></span></button>
                             </td>
                         </tr>
                     }

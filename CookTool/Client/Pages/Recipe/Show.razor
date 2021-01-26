@@ -3,7 +3,7 @@
 
 @if (recipe == null)
 {
-    <div class="spinner-border-sm" role="status">
+    <div class="spinner-border" role="status">
         <span class="sr-only">Loading...</span>
     </div>
 }
@@ -18,10 +18,10 @@ else
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Checked</th>
+                            <th></th>
                             <th>Name</th>
                             <th>Quantity</th>
-                            <th>Measurement</th>
+                            <th>Units</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,31 +49,43 @@ else
             <div class="col">
                 <img src=@ImageHelper.RenderImageString(recipe.Image, "images/default_recipe.png") alt="No image for this recipe" style="width: 100%;" />
                 <br /><br />
-                <div class="form-group">
-                    <label> Preparation time: </label>
-                    <input class="form-control m-2" type="time" value="@recipe.PreparationTime.TimeOfDay" placeholder="13:45:00" readonly>
-                </div>
-                <div class="form-group">
-                    <label> Portion size: </label>
-                    <div class="form-inline">
-                        <input class="form-control m-2" type="number" value="@recipe.PortionSize" placeholder="1" readonly>
-                        <button class="btn btn-primary" @onclick="() => ChangeIngredientAmountModal.Open()">Change portion size</button>
+                <div class="row p-1">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <label> Preparation time: </label>
                     </div>
-
-                    <Modal @ref="ChangeIngredientAmountModal">
-                        <Title>Change ingredient amount by changing portion size!</Title>
-                        <Body>
-                            <input class="form-control m-2" type="number" @bind="@TempPortionSize">
-                        </Body>
-                        <Footer>
-                            <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => ChangeIngredientAmount()">Save changes</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => ChangeIngredientAmountModal.Close()">Close</button>
-                        </Footer>
-                    </Modal>
+                    <div class="col">
+                        <input class="form-control" type="time" value="@recipe.PreparationTime.TimeOfDay" placeholder="13:45:00" readonly>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label> Rating: </label>
-                    <input class="form-control m-2" type="number" value="@recipe.Rating" placeholder="1" readonly>
+                <div class="row p-1">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <label> Portion size: </label>
+                    </div>
+                    <div class="col">
+                        <input class="form-control" type="number" value="@recipe.PortionSize" placeholder="1" readonly>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-1">
+                        <button class="btn btn-outline-warning" @onclick="() => ChangeIngredientAmountModal.Open()"><span class="oi oi-transfer" aria-hidden="true"></span></button>
+
+                        <Modal @ref="ChangeIngredientAmountModal">
+                            <Title>Change ingredient amount by changing portion size!</Title>
+                            <Body>
+                                <input class="form-control" type="number" min="1" @bind="@TempPortionSize">
+                            </Body>
+                            <Footer>
+                                <button type="button" class="btn btn-warning" data-dismiss="modal" @onclick="() => ChangeIngredientAmount()"><span class="oi oi-check" aria-hidden="true"></span></button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => ChangeIngredientAmountModal.Close()"><span class="oi oi-x" aria-hidden="true"></span></button>
+                            </Footer>
+                        </Modal>
+                    </div>
+                </div>
+                <div class="row p-1">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <label> Rating: </label>
+                    </div>
+                    <div class="col">
+                        <input class="form-control" type="number" value="@recipe.Rating" placeholder="1" readonly>
+                    </div>
                 </div>
                 <br />
                 <h4>Categories</h4>
@@ -107,6 +119,7 @@ else
         recipe = await Client.GetRecipe(Id);
         categories = await Client.GetRecipeCategories(Id);
         ingredients = await Client.GetRecipeIngredients(Id);
+        TempPortionSize = recipe.PortionSize;
     }
 
     public void ChangeIngredientAmount()

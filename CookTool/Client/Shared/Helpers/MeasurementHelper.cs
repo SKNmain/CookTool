@@ -17,6 +17,14 @@ namespace CookTool.Client.Shared.Helpers
         private static string S = "spoons(15ml)";
         private static string TS = "teaspoons(5ml)";
 
+        public static Dictionary<string, int> UnitsShortcuts = new Dictionary<string, int>()
+        {
+            { "ml", 1 },
+            { "l", 2 },
+            { "g", 3 },
+            { "kg", 4 }
+        };
+
         private static Dictionary<int, string> Values = new Dictionary<int, string>()
         {
             { 1, ML },

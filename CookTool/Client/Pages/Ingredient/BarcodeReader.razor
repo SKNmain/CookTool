@@ -1,0 +1,27 @@
+﻿
+<div class="container-fluid">
+    <div class="row p-1">
+        <div class="col-lg-2 col-md-2 col-sm-3">
+            <button class="btn btn-outline-warning" @onclick="(() => ShowScanBarcode = !ShowScanBarcode)">Scan Barcode</button>
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" @bind-value="Barcode" placeholder="No Barcode" readonly/>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+@if (ShowScanBarcode)
+{
+    <ZXingBlazor.Components.BarcodeReader ScanResult="((e) => { Barcode = e; GetProductByBarcode(e); ShowScanBarcode = !ShowScanBarcode; })"
+                                            ShowScanBarcode="ShowScanBarcode"
+                                            Close="(() => ShowScanBarcode = !ShowScanBarcode)" />
+}
+
+
+@code{
+    [Parameter] public Action<string> GetProductByBarcode { get; set; }
+    private bool ShowScanBarcode { get; set; } = false;
+    public string Barcode { get; set; }
+}

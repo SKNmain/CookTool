@@ -10,7 +10,7 @@
         <hr />
 
         <div class="form-group">
-            <a class="btn btn-success" @onclick="() => CreateListModal.Open()"><i class="oi oi-plus"></i> Add Recipe List</a>
+            <a class="btn btn-outline-warning" @onclick="() => CreateListModal.Open()"><span class="oi oi-plus" aria-hidden="true"></span></a>
         </div>
 
         <Modal @ref="CreateListModal">
@@ -19,14 +19,15 @@
                 <input type="text" @bind="@recipeList.Title" />
             </Body>
             <Footer>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => Create()">Create</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => CreateListModal.Close()">Close</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal" @onclick="() => Create()"><span class="oi oi-check" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => CreateListModal.Close()"><span class="oi oi-x" aria-hidden="true"></span></button>
             </Footer>
         </Modal>
+        <br />
 
         @if (recipeLists == null)
         {
-            <div class="spinner-border-sm" role="status">
+            <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         }
@@ -36,8 +37,8 @@
                 <thead>
                     <tr>
                         <th>Title</th>
-                        <th>Show Recipes</th>
-                        <th>Delete</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,12 +47,12 @@
                         <tr>
                             <td> @recipeList.Title </td>
                             <td>
-                                <a class="btn btn-success" href="recipelist/@recipeList.Title">Show Recipes</a>
+                                <a class="btn btn-warning" href="recipelist/@recipeList.Title"><span class="oi oi-eye" aria-hidden="true"></span></a>
                             </td>
                             <td>
                                 @if (recipeList.Title != "Fave")
                                 {
-                                    <button class="btn btn-danger" @onclick="@(() => Remove(recipeList))">Delete</button>
+                                    <button class="btn btn-danger" @onclick="@(() => Remove(recipeList))"><span class="oi oi-trash" aria-hidden="true"></span></button>
                                 }
                             </td>
                         </tr>

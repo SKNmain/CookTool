@@ -43,7 +43,7 @@
             var image = userAuth.FindAll(ClaimTypes.Surname).First().Value;
             var nickname = userAuth.FindAll(ClaimTypes.Name).First().Value;
 
-            user =  new CookTool.Shared.Authentication.UserView(nickname, Convert.FromBase64String(image));
+            user =  new CookTool.Shared.Authentication.UserView(nickname, String.IsNullOrEmpty(image) ? null : Convert.FromBase64String(image));
         }
         this.StateHasChanged();
     }

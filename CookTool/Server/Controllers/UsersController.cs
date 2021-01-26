@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CookTool.Server.Helpers;
 using CookTool.Server.Repositories;
+using CookTool.Shared.Authentication;
 using CookTool.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -31,6 +33,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public User GetUserByEmail([FromBody] string email)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             return usersRepository.GetRecordByEmail(email);
         }
 
@@ -45,14 +48,24 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Put(int id, [FromBody] User user)
         {
-            //user.Password = Encrypt(user.Password);
+            AuthHelper.CheckTokenBlackListed(Request);
             usersRepository.UpdateRecord(id, user);
         }
 
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //    usersRepository.DeleteRecord(id);
-        //}
+        [HttpPut("{id}/changepassword")]
+        [Authorize]
+        public ChangePasswordResult ChangePassword(int id, [FromBody] ChangePasswordModel model)
+        {
+            AuthHelper.CheckTokenBlackListed(Request);
+
+            var user = usersRepository.GetRecordById(id);
+            if (AuthHelper.IsPasswordCorrect(model.OldPassword, user.Password))
+            {
+                user.Password = CryptHelper.Encrypt(model.NewPassword);
+                usersRepository.UpdateRecord(id, user);
+                return new ChangePasswordResult() { Successful = true };
+            }
+            return new ChangePasswordResult() { Error = "Cannot change password!" };
+        }
     }
 }

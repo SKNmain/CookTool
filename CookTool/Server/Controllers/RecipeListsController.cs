@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using CookTool.Server.Repositories;
 using CookTool.Shared.Models;
 using System.Diagnostics;
+using CookTool.Server.Helpers;
 
 namespace CookTool.Server.Controllers
 {
@@ -22,6 +23,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public IList<RecipeList> GetUserRecipeLists(int userid)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             return recipeListsRepository.GetUserRecords(userid);
         }
 
@@ -29,6 +31,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public RecipeList GetUserFavList(int userid)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             return recipeListsRepository.GetFavRecipeList(userid);
         }
 
@@ -36,6 +39,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public IList<Recipe> GetRecipeListRecipes(int recipelistid)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             return recipeListsRepository.GetRecipeListRecipes(recipelistid);
         }
 
@@ -43,6 +47,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public RecipeList GetUserList(int userid, string title)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             return recipeListsRepository.GetRecordByTitle(userid, title);
         }
 
@@ -50,6 +55,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void AddRecipeToRecipeList([FromBody] RecipeListRecipe recipeListRecipe)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             recipeListRecipeRepository.AddRecord(recipeListRecipe);
         }
 
@@ -57,6 +63,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void DeleteRecipeFromRecipeList(int recipeid, int recipelistid)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             recipeListRecipeRepository.DeleteSpecialRecord(recipeid, recipelistid);
         }
 
@@ -64,6 +71,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Post([FromBody] RecipeList recipeList)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             recipeListsRepository.AddRecord(recipeList);
         }
 
@@ -71,6 +79,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Put(int id, [FromBody] RecipeList recipeList)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             recipeListsRepository.UpdateRecord(id, recipeList);
         }
 
@@ -78,6 +87,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Delete(int id)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             recipeListsRepository.DeleteRecord(id);
         }
     }

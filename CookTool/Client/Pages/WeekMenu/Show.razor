@@ -12,74 +12,78 @@
             <h3>My week menu</h3>
             <hr />
 
-            <button class="btn btn-warning" @onclick="() => AddRecipeModal.Open()" style="margin-right: 1rem;">Add recipe</button>
+            <div class="form-inline">
+                <button class="btn btn-warning" @onclick="() => AddRecipeModal.Open()" style="margin-right: 1rem;"><span class="oi oi-plus" aria-hidden="true"></span></button>
 
-            <Modal @ref="AddRecipeModal">
-                <Title>Add new recipe to your week menu!</Title>
-                <Body>
-                    <select id="weekDays" @onchange="@((ChangeEventArgs e) => WeekDay = e.Value.ToString())">
-                        @foreach (var weekDay in WeekMenuHelper.WeekDays)
-                        {
-                            <option value="@weekDay">@weekDay</option>
-                        }
-                    </select>
-                    <select id="timeDay" @onchange="@((ChangeEventArgs e) => TimeDay = e.Value.ToString())">
-                        @foreach (var timeDay in WeekMenuHelper.TimeOfDays)
-                        {
-                            <option value="@timeDay">@timeDay</option>
-                        }
-                    </select>
-                    <br />
-                    @foreach (var recipe in recipesSelected)
-                    {
-                        <input type="checkbox" id="@recipe.Id" @bind="@recipe.IsSelected" /> @recipe.Title
-                        <br />
-                    }
-                </Body>
-                <Footer>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => AddNewRecipe()">Add</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => AddRecipeModal.Close()">Close</button>
-                </Footer>
-            </Modal>
-
-            <button class="btn btn-danger" @onclick="() => ResetAll()">Reset week menu</button>
-            <br />
-            <br />
-
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th></th>
-                        @foreach (var weekDay in WeekMenuHelper.WeekDays)
-                        {
-                            <th>@weekDay</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var timeOfDay in WeekMenuHelper.TimeOfDays)
-                    {
-                        <tr>
-                            <th>@timeOfDay</th>
+                <Modal @ref="AddRecipeModal">
+                    <Title>Add new recipe to your week menu!</Title>
+                    <Body>
+                        <select id="weekDays" @onchange="@((ChangeEventArgs e) => WeekDay = e.Value.ToString())">
                             @foreach (var weekDay in WeekMenuHelper.WeekDays)
                             {
-                                <th>
-                                    @foreach (var recipeId in data[weekDay][timeOfDay])
-                                    {
-                                        <span class="bagde badge-pill badge-warning" style="font-size: 1rem;"> <a href="recipe/@recipeId.ToString()" style="color: lightyellow">@RecipeHelper.GetRecipeTitle(recipes, recipeId)</a> </span><br />
-                                    }
-                                </th>
+                                <option value="@weekDay">@weekDay</option>
+                            }
+                        </select>
+                        <select id="timeDay" @onchange="@((ChangeEventArgs e) => TimeDay = e.Value.ToString())">
+                            @foreach (var timeDay in WeekMenuHelper.TimeOfDays)
+                            {
+                                <option value="@timeDay">@timeDay</option>
+                            }
+                        </select>
+                        <br />
+                        @foreach (var recipe in recipesSelected)
+                        {
+                            <input type="checkbox" id="@recipe.Id" @bind="@recipe.IsSelected" /> @recipe.Title
+                            <br />
+                        }
+                    </Body>
+                    <Footer>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal" @onclick="() => AddNewRecipe()"><span class="oi oi-check" aria-hidden="true"></span></button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => AddRecipeModal.Close()"><span class="oi oi-x" aria-hidden="true"></span></button>
+                    </Footer>
+                </Modal>
+
+                <button class="btn btn-danger" style="margin-left: 5px;" @onclick="() => ResetAll()"><span class="oi oi-loop" aria-hidden="true"></span></button>
+            </div>
+
+            <br />
+
+            <div class="table-responsive-sm">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            @foreach (var weekDay in WeekMenuHelper.WeekDays)
+                            {
+                                <th>@weekDay</th>
                             }
                         </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
+                    </thead>
+                    <tbody>
+                        @foreach (var timeOfDay in WeekMenuHelper.TimeOfDays)
+                        {
+                            <tr>
+                                <th>@timeOfDay</th>
+                                @foreach (var weekDay in WeekMenuHelper.WeekDays)
+                                {
+                                    <th>
+                                        @foreach (var recipeId in data[weekDay][timeOfDay])
+                                        {
+                                            <span class="bagde badge-pill badge-warning" style="font-size: 1rem;"> <a href="recipe/@recipeId.ToString()" style="color: lightyellow">@RecipeHelper.GetRecipeTitle(recipes, recipeId)</a> </span><br />
+                                        }
+                                    </th>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+            else
+            {
             <text>No Week Menu Found.</text>
-        }
-    </Authorized>
+            }
+        </Authorized>
     <NotAuthorized>
         <RedirectToLogin />
     </NotAuthorized>
@@ -105,7 +109,7 @@
         weekMenu = await Client.GetUserWeekMenu();
         data = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, List<int>>>>(weekMenu.WeekMenuData);
 
-        recipes = await Client.GetRecipes();
+        recipes = await Client.GetPublicAndUserRecipes();
         recipesSelected = new List<RecipeSelect>();
 
         recipes.ForEach(recipe =>

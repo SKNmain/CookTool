@@ -33,6 +33,14 @@ namespace CookTool.Client
             return recipes;
         }
 
+        public async Task<List<Recipe>> GetPublicAndUserRecipes()
+        {
+            var currentUser = await GetCurrentUser();
+            var recipeData = await _client.GetAsync($"recipes/{currentUser.Id}/publicandmine");
+            var recipes = await recipeData.Content.ReadFromJsonAsync<List<Recipe>>();
+            return recipes;
+        }
+
         public async Task<Recipe> GetRecipe(string id)
         {
             var recipeData = await _client.GetAsync($"recipes/{id}");
@@ -83,7 +91,8 @@ namespace CookTool.Client
 
         public async Task CreateUserRecipe(Recipe recipe, List<Category> categories, List<Ingredient> ingredients)
         {
-            recipe.UserId = GetCurrentUser().Id + 1;
+            var currentUser = await GetCurrentUser();
+            recipe.UserId = currentUser.Id;
             var data = await _client.PostAsJsonAsync("recipes", recipe);
             int id = await data.Content.ReadFromJsonAsync<int>();
             await _client.PostAsJsonAsync($"recipes/{id}/categories", categories);
@@ -150,7 +159,8 @@ namespace CookTool.Client
 
         public async Task AddRecipeList(RecipeList recipelist)
         {
-            recipelist.UserId = GetCurrentUser().Id + 1; //todo: consider why is it behave like that
+            var currentUser = await GetCurrentUser();
+            recipelist.UserId = currentUser.Id;
             await _client.PostAsJsonAsync("recipelists", recipelist);
         }
 
@@ -197,7 +207,8 @@ namespace CookTool.Client
 
         public async Task CreateUserTip(Tip tip)
         {
-            tip.UserId = GetCurrentUser().Id + 1;
+            var currentUser = await GetCurrentUser();
+            tip.UserId = currentUser.Id;
             await _client.PostAsJsonAsync("tips", tip);
         }
 
@@ -236,11 +247,12 @@ namespace CookTool.Client
 
         public async Task AddUserIngredient(IngredientItem item)
         {
+            var currentUser = await GetCurrentUser();
             UserIngredient ui = new UserIngredient();
             ui.Name = item.Name;
             ui.Quantity = item.Quantity;
             ui.MeasurementUnitId = item.MeasurementUnitId;
-            ui.UserId = GetCurrentUser().Id + 1;
+            ui.UserId = currentUser.Id;
             await _client.PostAsJsonAsync("ingredients", ui);
         }
 
@@ -266,6 +278,19 @@ namespace CookTool.Client
             var userData = await _client.GetAsync($"users/{id}");
             var user = await userData.Content.ReadFromJsonAsync<User>();
             return user;
+        }
+
+        public async Task UpdateUser(User user)
+        {
+            await _client.PutAsJsonAsync($"users/{user.Id}", user);
+        }
+
+        public async Task<ChangePasswordResult> ChangeUserPassword(ChangePasswordModel model)
+        {
+            var currentUser = await GetCurrentUser();
+            var data = await _client.PutAsJsonAsync($"users/{currentUser.Id}/changepassword", model);
+            var result = await data.Content.ReadFromJsonAsync<ChangePasswordResult>();
+            return result;
         }
 
         public abstract Task<User> GetCurrentUser();

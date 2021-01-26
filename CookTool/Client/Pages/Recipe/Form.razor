@@ -31,7 +31,14 @@
     <div class="form-group">
         <div>
             <label>Private :</label>
-            <input type="checkbox" class="form-control" @bind-value="recipe.IsPrivate" />
+            @if (recipe.IsPrivate)
+            {
+                <input type="checkbox" class="form-control" @bind-value="@recipe.IsPrivate" checked/>
+            }
+            else
+            {
+                <input type="checkbox" class="form-control" @bind="@recipe.IsPrivate" />
+            }
         </div>
     </div>
 </div>
@@ -41,7 +48,7 @@
         <div class="form-row flex-row">
             @if (categories == null)
             {
-                <div class="spinner-border-sm" role="status">
+                <div class="spinner-border" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
             }
@@ -53,7 +60,15 @@
                         {
                             <label>
                                 <span class="bagde badge-pill badge-warning">
-                                    <input type="checkbox" id="@category.Id" @bind="@category.IsSelected" />@category.Name
+                                    @if (category.IsSelected)
+                                    {
+                                        <input type="checkbox" id="@category.Id" @bind-value="@category.IsSelected" checked/>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="@category.Id" @bind="@category.IsSelected" />
+                                    }
+                                    @category.Name
                                 </span>
                             </label>
                         }
@@ -86,7 +101,7 @@
         <br />
         @if (ingredients == null && units == null && newIngredient == null)
         {
-            <div class="spinner-border-sm" role="status">
+            <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         }
@@ -96,36 +111,38 @@
             {
                 foreach (var ingredient in ingredients)
                 {
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label>Name:</label>
-                            <input type="text" class="form-control" @bind-value="@ingredient.Name" />
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label>Quantity:</label>
-                            <input type="number" class="form-control" @bind-value="@ingredient.Quantity" />
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label>Measurement unit:</label>
-                            @if (units == null)
-                            {
-                                <div class="spinner-border-sm" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            }
-                            else
-                            {
-                                <select id="units" @bind="@ingredient.MeasurementUnitId">
-                                    @foreach (var unit in units)
-                                    {
-                                        <option value="@unit.Id">@unit.Name</option>
-                                    }
-                                </select>
-                            }
-
-                        </div>
-                        <div class="form-group col-md-1">
-                            <button class="btn btn-danger" @onclick="() => DeleteIngredient(ingredient)"><span class="oi oi-trash" aria-hidden="true"></span></button>
+                    <div class="container-fluid">
+                        <div class="row p-1">
+                            <div class="col-lg-3 col-md-2 col-sm-2">
+                                <label> Name: </label>
+                                <input type="text" class="form-control" @bind-value="@ingredient.Name" />
+                            </div>
+                            <div class="col-lg-3 col-md-2 col-sm-2">
+                                <label> Quantity: </label>
+                                <input type="number" class="form-control" @bind-value="@ingredient.Quantity" />
+                            </div>
+                            <div class="col-lg-3 col-md-2 col-sm-2">
+                                <label> Unit: </label>
+                                @if (units == null)
+                                {
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <select class="form-control" id="units" @bind="@ingredient.MeasurementUnitId">
+                                        @foreach (var unit in units)
+                                        {
+                                            <option value="@unit.Id">@unit.Name</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-1">
+                                <label></label>
+                                <button class="btn btn-danger" @onclick="() => DeleteIngredient(ingredient)"><span class="oi oi-trash" aria-hidden="true"></span></button>
+                            </div>
                         </div>
                     </div>
                 }
@@ -135,7 +152,7 @@
                 <p>No ingredients to show!</p>
             }
             <br />
-            <button class="btn btn-primary" @onclick="() => AddIngredientModal.Open()">+</button>
+            <button class="btn btn-outline-warning" @onclick="() => AddIngredientModal.Open()"><span class="oi oi-plus" aria-hidden="true"></span></button>
 
             <Modal @ref="AddIngredientModal">
                 <Title>Add new ingredient!</Title>
@@ -143,8 +160,8 @@
                     <CookTool.Client.Pages.Ingredient.IngredientForm units="units" item="item"/>
                 </Body>
                 <Footer>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => AddIngredient()">Save changes</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => AddIngredientModal.Close()">Close</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" @onclick="() => AddIngredient()"><span class="oi oi-check" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => AddIngredientModal.Close()"><span class="oi oi-x" aria-hidden="true"></span></button>
                 </Footer>
             </Modal>
 
@@ -153,21 +170,20 @@
     </div>
 </div>
 <div class="form-row">
-    <button type="submit" class="btn btn-success" @onclick="OnValidSubmit">
-        @ButtonText
+    <button type="submit" class="btn btn-outline-warning" @onclick="OnValidSubmit">
+        <span class="oi oi-check" aria-hidden="true"></span>
     </button>
 </div>
 
 @code {
     [Parameter] public CookTool.Shared.Models.Recipe recipe { get; set; }
-    [Parameter] public string ButtonText { get; set; } = "Save";
     [Parameter] public EventCallback OnValidSubmit { get; set; }
     [Parameter] public List<CategorySelect> categories { get; set; }
     [Parameter] public List<CookTool.Shared.Models.Ingredient> ingredients { get; set; }
     [Parameter] public List<CookTool.Shared.Models.MeasurementUnit> units { get; set; }
     private IFileListEntry file;
 
-    private CookTool.Client.Shared.Models.IngredientItem item = new CookTool.Client.Shared.Models.IngredientItem();
+    private CookTool.Client.Shared.Models.IngredientItem item = new CookTool.Client.Shared.Models.IngredientItem() { MeasurementUnitId = 1, Quantity = 1};
     private CookTool.Shared.Models.Ingredient newIngredient = new CookTool.Shared.Models.Ingredient();
     private Modal AddIngredientModal { get; set; }
 
@@ -191,6 +207,6 @@
         newIngredient.Name = item.Name;
         newIngredient.Quantity = item.Quantity;
         newIngredient.MeasurementUnitId = item.MeasurementUnitId;
-        item = new CookTool.Client.Shared.Models.IngredientItem();
+        item = new CookTool.Client.Shared.Models.IngredientItem() { MeasurementUnitId = units.First().Id, Quantity = 1 };
     }
 }

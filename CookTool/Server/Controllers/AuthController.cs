@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -6,8 +7,10 @@ using CookTool.Server.Helpers;
 using CookTool.Server.Repositories;
 using CookTool.Shared.Authentication;
 using CookTool.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CookTool.Server.Controllers
@@ -20,6 +23,7 @@ namespace CookTool.Server.Controllers
         private readonly UsersRepository usersRepository = new UsersRepository();
         private readonly RecipeListsRepository recipeListsRepository = new RecipeListsRepository();
         private readonly WeekMenusRepository weekMenuRepository = new WeekMenusRepository();
+        private readonly BlackListedTokensRepository blackListedTokensRepository = new BlackListedTokensRepository();
 
         public AuthController(IConfiguration configuration)
         {
@@ -56,7 +60,15 @@ namespace CookTool.Server.Controllers
 
             var claims = new[] { new Claim(ClaimTypes.Name, model.Email) };
 
-            return new LoginResult { Successful = true, Token = AuthHelper.GenerateToken(claims, _configuration), Nickname = user.Nickname, Image = Convert.ToBase64String(user.Image) };
+            return new LoginResult { Successful = true, Token = AuthHelper.GenerateToken(claims, _configuration), Nickname = user.Nickname, Image = user.Image == null ? null : Convert.ToBase64String(user.Image) };
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public void LogOut([FromBody] BlackListedToken token)
+        {
+            AuthHelper.CheckTokenBlackListed(Request);
+            blackListedTokensRepository.AddRecord(token);
         }
 
         private void PrepareFaveRecipeList(int userid)

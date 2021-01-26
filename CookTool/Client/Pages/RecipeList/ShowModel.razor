@@ -4,39 +4,37 @@
 
 @if (RecipeList == null && Recipes == null)
 {
-    <div class="spinner-border-sm" role="status">
+    <div class="spinner-border" role="status">
         <span class="sr-only">Loading...</span>
     </div>
 }
 else
 {
-    <h2> @RecipeList.Title </h2>
-    <hr />
-
-    <div class="form-group">
-        <a class="btn btn-success" href="recipelist/@RecipeList.Title/addrecipe"><i class="oi oi-plus"></i> Add Recipe to List</a>
-    </div>
-
-    @if (RecipeList.Title != "Fave")
-    {
-        <div class="form-group">
-            <a class="btn btn-success" @onclick="() => EditListModal.Open()"><i class="oi oi-plus"></i> Update Recipe List</a>
-        </div>
-
+    <div class="form-inline">
+        <h2> @RecipeList.Title </h2>
+        @if (!RecipeList.Title.Equals("Fave"))
+        {
+            <div class="form-group" style="margin-left: 10px;">
+                <a class="btn btn-outline-warning" @onclick="() => EditListModal.Open()"><span class="oi oi-brush" aria-hidden="true"></span></a>
+            </div>
+        }
         <Modal @ref="EditListModal">
             <Title>Update current recipe list!</Title>
             <Body>
                 <input type="text" @bind="@RecipeList.Title" />
             </Body>
             <Footer>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="() => Edit()">Update</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => EditListModal.Close()">Close</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal" @onclick="() => Edit()"><span class="oi oi-check" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => EditListModal.Close()"><span class="oi oi-x" aria-hidden="true"></span></button>
             </Footer>
         </Modal>
-    }
+    </div>
+    <hr />
 
-    <br>
-
+    <div class="form-group">
+        <a class="btn btn-outline-warning" href="recipelist/@RecipeList.Title/addrecipe"><span class="oi oi-plus" aria-hidden="true"></span></a>
+    </div>
+    <br />
 
     @if (Recipes.Count > 0)
     {
@@ -46,8 +44,8 @@ else
                     <th>Photo</th>
                     <th>Title</th>
                     <th>Public</th>
-                    <th>Show</th>
-                    <th>Delete From List</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -62,10 +60,10 @@ else
                         <td> @recipe.Title </td>
                         <td> @RecipeHelper.IsPublic(recipe.IsPrivate) </td>
                         <td>
-                            <a class="btn btn-success" href="recipe/@recipe.Id.ToString()">Show</a>
+                            <a class="btn btn-warning" href="recipe/@recipe.Id.ToString()"><span class="oi oi-eye" aria-hidden="true"></span></a>
                         </td>
                         <td>
-                            <button class="btn btn-danger" @onclick="@(() => Remove(recipe))">Remove</button>
+                            <button class="btn btn-danger" @onclick="@(() => Remove(recipe))"><span class="oi oi-trash" aria-hidden="true"></span></button>
                         </td>
                     </tr>
                 }

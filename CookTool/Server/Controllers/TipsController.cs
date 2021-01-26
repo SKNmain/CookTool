@@ -38,6 +38,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public IList<Tip> GetUserTips(int userid)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             return tipsRepository.GetUserRecords(userid);
         }
 
@@ -45,6 +46,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Post([FromBody] Tip tip)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             tipsRepository.AddRecord(tip);
         }
 
@@ -52,6 +54,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Put(int id, [FromBody] Tip tip)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             tipsRepository.UpdateRecord(id, tip);
         }
 
@@ -59,6 +62,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Delete(int id)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             tipsRepository.DeleteRecord(id);
         }
     }

@@ -9,7 +9,7 @@
         <hr />
 
         <div class="form-group">
-            <a class="btn btn-success" href="recipe/create"><i class="oi oi-plus"></i> Add New Recipe</a>
+            <a class="btn btn-outline-warning" href="recipe/create"><span class="oi oi-plus" aria-hidden="true"></span></a>
         </div>
         <br>
 
@@ -29,9 +29,9 @@
                         <th>Photo</th>
                         <th>Title</th>
                         <th>Public</th>
-                        <th>Show</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,13 +46,13 @@
                             <td> @recipe.Title </td>
                             <td> @RecipeHelper.IsPublic(recipe.IsPrivate) </td>
                             <td>
-                                <a class="btn btn-success" href="recipe/@recipe.Id.ToString()">Show</a>
+                                <a class="btn btn-warning" href="recipe/@recipe.Id.ToString()"><span class="oi oi-eye" aria-hidden="true"></span></a>
                             </td>
                             <td>
-                                <a class="btn btn-warning" href="recipe/edit/@recipe.Id.ToString()">Edit</a>
+                                <a class="btn btn-warning" href="recipe/edit/@recipe.Id.ToString()"><span class="oi oi-brush" aria-hidden="true"></span></a>
                             </td>
                             <td>
-                                <button class="btn btn-danger" @onclick="@(() => Delete(recipe))">Delete</button>
+                                <button class="btn btn-danger" @onclick="@(() => Delete(recipe))"><span class="oi oi-trash" aria-hidden="true"></span></button>
                             </td>
                         </tr>
                     }

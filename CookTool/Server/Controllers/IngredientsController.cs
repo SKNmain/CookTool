@@ -1,4 +1,5 @@
-﻿using CookTool.Server.Repositories;
+﻿using CookTool.Server.Helpers;
+using CookTool.Server.Repositories;
 using CookTool.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,8 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public IDictionary<string, IList<UserIngredient>> GetUserIngredients(int id)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
+
             var uingredients = uiRepository.GetUserIngredients(id);
             var measureUnits = munitsRepository.GetAllRecords();
             var unitIngredients = new Dictionary<string, IList<UserIngredient>>();
@@ -35,6 +38,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public IList<UserIngredient> GetUserIngredientsNoUnits(int id)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             return uiRepository.GetUserIngredients(id);
         }
 
@@ -42,6 +46,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Post([FromBody] UserIngredient userIngredient)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             uiRepository.AddRecord(userIngredient);
         }
 
@@ -49,6 +54,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Delete(int id)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             uiRepository.DeleteRecord(id);
         }
     }

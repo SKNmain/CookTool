@@ -22,14 +22,13 @@
         <textarea class="form-control" rows="12" @bind="@tip.Content"></textarea>
     </div>
     <br /><br />
-    <button type="submit" class="btn btn-success">
-        @ButtonText
+    <button type="submit" class="btn btn-outline-warning">
+        <span class="oi oi-check" aria-hidden="true"></span>
     </button>
 </EditForm>
 
 @code {
     [Parameter] public CookTool.Shared.Models.Tip tip { get; set; }
-    [Parameter] public string ButtonText { get; set; } = "Save";
     [Parameter] public EventCallback OnValidSubmit { get; set; }
     private IFileListEntry file;
 }

@@ -1,35 +1,46 @@
 ﻿@using CookTool.Client.Shared.Models
 
-<div class="form-group row">
-    <label class="col-md-1 col-form-label">Name:</label>
-    <div class="col-md-4">
-        <input class="form-control" type="text" @onchange="@((ChangeEventArgs e) => item.Name = e.Value.ToString())">
-    </div>
-</div>
-<div class="form-group row">
-    <label class="col-md-1 col-form-label">Quantity:</label>
-    <div class="col-md-4">
-        <input class="form-control" type="number" @onchange="@((ChangeEventArgs e) => item.Quantity = Double.Parse(e.Value.ToString()))">
-    </div>
-</div>
-<div class="form-group row">
-    <label class="col-md-1 col-form-label">Units:</label>&nbsp;&nbsp;&nbsp;&nbsp;
-    @if (units == null)
-    {
-        <div class="spinner-border-sm" role="status">
-            <span class="sr-only">Loading...</span>
+<div class="container-fluid">
+    <div class="row p-1">
+        <div class="col-lg-2 col-md-2 col-sm-3">
+            <label> Name: </label>
         </div>
-    }
-    else
-    {
-        <select id="units" @onchange="@((ChangeEventArgs e) => item.MeasurementUnitId = Int32.Parse(e.Value.ToString()))">
-            @foreach (var unit in units)
+        <div class="col">
+            <input class="form-control" type="text" @onchange="@((ChangeEventArgs e) => item.Name = e.Value.ToString())">
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-lg-2 col-md-2 col-sm-3">
+            <label> Quantity: </label>
+        </div>
+        <div class="col">
+            <input class="form-control" type="number" min="1" placeholder="1" @onchange="@((ChangeEventArgs e) => item.Quantity = Double.Parse(e.Value.ToString()))">
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-lg-2 col-md-2 col-sm-3">
+            <label> Units: </label>
+        </div>
+        <div class="col">
+            @if (units == null)
             {
-                <option value="@unit.Id">@unit.Name</option>
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
             }
-        </select>
-    }
+            else
+            {
+                <select class="form-control" id="units" @onchange="@((ChangeEventArgs e) => item.MeasurementUnitId = Int32.Parse(e.Value.ToString()))">
+                    @foreach (var unit in units)
+                    {
+                        <option value="@unit.Id">@unit.Name</option>
+                    }
+                </select>
+            }
+        </div>
+    </div>
 </div>
+
 
 
 @code {

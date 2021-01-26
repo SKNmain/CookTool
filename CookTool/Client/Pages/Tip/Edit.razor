@@ -6,7 +6,7 @@
     <Authorized>
         @if (tip == null)
         {
-            <div class="spinner-border-sm" role="status">
+            <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         }
@@ -15,8 +15,7 @@
             <h3> Update tip </h3>
             <hr />
 
-            <Form ButtonText="Update" tip="@tip"
-                  OnValidSubmit="@(() => UpdateTip())" />
+            <Form tip="@tip" OnValidSubmit="@(() => UpdateTip())" />
         }
     </Authorized>
     <NotAuthorized>

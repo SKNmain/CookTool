@@ -1,0 +1,68 @@
+﻿@using CookTool.Client.Shared.Models
+
+@if (item == null)
+{
+    <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row p-1">
+            <div class="col-lg-2 col-md-2 col-sm-3">
+                <label> Name: </label>
+            </div>
+            <div class="col">
+                <label> @GetProductName() </label>
+            </div>
+        </div>
+        <div class="row p-1">
+            <div class="col-lg-2 col-md-2 col-sm-3">
+                <label> Quantity: </label>
+            </div>
+            <div class="col">
+                <label> @GetQuantity() </label>
+            </div>
+        </div>
+        <div class="row p-1">
+            <div class="col-lg-2 col-md-2 col-sm-3">
+                <label> Units: </label>
+            </div>
+            <div class="col">
+                @if (units == null)
+                {
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                }
+                else
+                {
+                    <label> @GetUnitName() </label>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public IngredientItem item { get; set; }
+    [Parameter] public List<CookTool.Shared.Models.MeasurementUnit> units { get; set; }
+
+    private string GetUnitName()
+    {
+        var result = units.Find(u => u.Id == item.MeasurementUnitId);
+
+        return result == null ? "No Unit" : result.Name;
+    }
+
+    private string GetProductName()
+    {
+        return String.IsNullOrEmpty(item.Name) ? "No Product Name" : item.Name;
+    }
+
+    private string GetQuantity()
+    {
+        return item.Quantity <= 0 ? "No Quantity" : item.Quantity.ToString();
+    }
+}

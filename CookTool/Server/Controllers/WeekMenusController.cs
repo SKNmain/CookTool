@@ -21,6 +21,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public WeekMenu GetUserWeekMenu(int userid)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             return weekMenuRepository.GetRecordByUserId(userid);
         }
 
@@ -34,6 +35,7 @@ namespace CookTool.Server.Controllers
         [Authorize]
         public void Put(int id, [FromBody] WeekMenu weekMenu)
         {
+            AuthHelper.CheckTokenBlackListed(Request);
             weekMenuRepository.UpdateRecord(id, weekMenu);
         }
     }
