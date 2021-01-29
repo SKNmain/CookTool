@@ -1,3 +1,5 @@
+//this code was taken from www.github.com/SteveSandersonMS/BlazorInputFile
+
 (function () {
     window.BlazorInputFile = {
         init: function init(elem, componentInstance) {

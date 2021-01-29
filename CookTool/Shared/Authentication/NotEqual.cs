@@ -5,6 +5,7 @@ using System.Text;
 
 namespace CookTool.Shared.Authentication
 {
+    //this code was taken from www.codeproject.com/Questions/614644/MVC-Data-Annotation-For-Not-Equal
     public class NotEqual : ValidationAttribute
     {
         private string OtherProperty { get; set; }

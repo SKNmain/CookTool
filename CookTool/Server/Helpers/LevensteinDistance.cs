@@ -15,6 +15,8 @@ namespace CookTool.Server.Helpers
         /// <param name="source1">First string</param>
         /// <param name="source2">Second string</param>
         /// <returns></returns>
+         
+        // this code was taken from www.gist.github.com/Davidblkx/e12ab0bb2aff7fd8072632b396538560
         public static int Calculate(string source1, string source2) //O(n*m)
         {
             var source1Length = source1.Length;

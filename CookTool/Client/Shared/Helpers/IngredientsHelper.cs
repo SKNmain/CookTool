@@ -8,6 +8,7 @@ namespace CookTool.Client.Shared.Helpers
 {
     public class IngredientsHelper
     {
+        //this examples of products was taken from www.mojewypieki.com/info/przelicznik-kulinarny 
         public static List<IngredientItem> BasicItems = new List<IngredientItem>()
         {
             new IngredientItem("wheat flour", 1, 3, 1.56),

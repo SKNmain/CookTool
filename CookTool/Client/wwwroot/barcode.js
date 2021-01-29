@@ -1,3 +1,5 @@
+//this code was taken from www.github.com/densen2014/ZXingBlazor
+
 (function () { 
     window.zxing = {
         start: function (autostop,wrapper) {

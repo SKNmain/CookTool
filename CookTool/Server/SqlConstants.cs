@@ -98,6 +98,8 @@ namespace CookTool.Server
 
         public static readonly string ALL_RECIPE_CATEGORIES = "SELECT * FROM RecipeCategory";
 
+        // --- BLACKLISTED TOKENS REPOSITORY --- //
+
         public static string ALL_BLACKLISTED_TOKENS = "SELECT * FROM BlackListedTokens";
     }
 }

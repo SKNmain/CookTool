@@ -43,14 +43,6 @@ namespace CookTool.Server
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
                 };
             });
-
-            //services.AddCors(policy =>
-            //{
-            //    policy.AddPolicy("CorsPolicy", opt => opt
-            //        .AllowAnyOrigin()
-            //        .AllowAnyHeader()
-            //        .AllowAnyMethod());
-            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

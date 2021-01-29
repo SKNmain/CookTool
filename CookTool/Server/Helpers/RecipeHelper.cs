@@ -10,7 +10,6 @@ namespace CookTool.Server.Helpers
     {
         public static List<int> FilterRecipeIds(List<string> userIngredients, IngredientsRepository ingredientsRepository)
         {
-            //todo: później też można się pobawić w quantity
             Dictionary<int, int> recipesIngValue = new Dictionary<int, int>();
             foreach (var item in ingredientsRepository.GetAllRecords())
             {
